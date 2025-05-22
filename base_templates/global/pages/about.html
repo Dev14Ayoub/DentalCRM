@@ -1,0 +1,23 @@
+{% extends 'global/base.html' %}
+{% load static %}
+{% load i18n %}
+
+{% block title %}{% translate 'About' %}{% endblock title %} 
+{% block content %}
+    {% include 'global/partials/messages.html' %}
+    <div class="main-content main-content-list container">
+        <div class="about-text">
+            <ul>
+                <div class="about-title">
+                    <h1>{% translate "Welcome to OdontoDj!" %}</h1> 
+                </div>
+                <img src="{% get_static_prefix %}global/img/od_logo.png" alt="Logo" width="5%">
+                {% for text in about_text %}
+                    <li>
+                        <h3>{{ text }}</h3>
+                    </li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+{% endblock content %}

@@ -1,0 +1,96 @@
+{% extends 'global/base.html' %}
+{% load i18n %}
+{% block title %}{% translate 'Dashboard' %}{% endblock title %}
+
+{% block content %}
+    <div class="main-content dashboard center container article">
+        {% include 'global/partials/messages.html' %}
+        <div class="dashboard-tag center">
+            <h2>{% translate 'Dashboard' %}</h2>
+            <div class="dashboard-update">
+                <h3><a href="{% url 'users:update' %}">{% translate "Update Profile" %}</a></h3>
+            </div>
+            <div class="appointment-list center">
+                {% if appointments %}
+                    <h4>{% translate 'Your Appointments' %}</h4>
+                    <div class="table-wrapper">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>{% translate 'ID' %}</th>
+                                    <th>{% translate 'Procedure' %}</th>
+                                    <th>{% translate 'Date' %}</th>
+                                    <th>{% translate 'Time' %}</th>
+                                    <th>{% translate 'Price' %}</th>
+                                    <th>{% translate 'Confirmed' %}</th>
+                                    <th>{% translate 'Cancel' %}</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for appointment in appointments %}
+                                    <tr>
+                                        <td>
+                                            <a href="{% url 'users:appointment_detail' appointment.id %}">#{{ appointment.id }}</a>
+                                        </td>
+                                        <td>{{ appointment.procedure }}</td>
+                                        <td>{{ appointment.date }}</td>
+                                        <td>{{ appointment.time }}</td>
+                                        <td>R${{ appointment.procedure.price }}</td>
+                                        <td>
+                                            {% if appointment.is_confirmed %}
+                                                ✔️
+                                            {% else %}
+                                                ✖️
+                                            {% endif %}
+                                        </td>
+                                        <td>                          
+                                            <form class="inline-form form-delete" action="{% url 'users:appointment_delete' %}" method="POST">
+                                                {% csrf_token %}
+                                                <input type="hidden" name="id" value="{{ appointment.id }}">
+                                                <button class="delete-button" type="submit">❌</button>
+                                            </form>
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% else %}
+                    <h3><p>{% translate 'You have no appointments scheduled' %}</p></h3>
+                {% endif %}
+            </div>
+            <div class="appointment-list">
+                {% if closed_appointments %}
+                    <h4>{% translate 'Treatment History' %}</h4>
+                    <div class="table-wrapper">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>{% translate 'ID' %}</th>
+                                    <th>{% translate 'Procedure' %}</th>
+                                    <th>{% translate 'Date' %}</th>
+                                    <th>{% translate 'Time' %}</th>
+                                    <th>{% translate 'Price' %}</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for appointment in closed_appointments %}
+                                    <tr>
+                                        <td><a href="{% url 'users:appointment_detail' appointment.id %}">#{{ appointment.id }}</a></td>
+                                        <td>{{ appointment.procedure }}</td>
+                                        <td>{{ appointment.date }}</td>
+                                        <td>{{ appointment.time }}</td>
+                                        <td>R${{ appointment.procedure.price }}</td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    <script>
+        var currentLanguage = "{{ LANGUAGE_CODE }}";
+    </script>
+{% endblock content %}
