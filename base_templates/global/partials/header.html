@@ -1,41 +1,44 @@
 {% load i18n %}
 {% load static %}
-<header class="main-header-container">
-    <div class="main-header container">
-        <div class="logo-container">
-            <a class="main-logo" href="{% url 'base:home' %}">
-                <img src="{% get_static_prefix %}global/img/od.png" alt="Logo" width="50%">
-            </a>
-        </div>
-        <div class="header-buttons">
-            <button class="plaintext-button services">
-                <a href="{% url 'base:services' %}">{% translate "Services" %}</a>
-            </button>
-            <button class="plaintext-button schedule">
-                <a href="{% url 'schedule:schedule' %}">{% translate "Schedule" %}</a>
-            </button>
-            <button class="plaintext-button about">
-                <a href="{% url 'base:about' %}">{% translate "About" %}</a>
-            </button>
-            {% if user.is_authenticated %}
-                <button class="plaintext-button dashboard">
-                    <a href="{% url 'users:dashboard' %}">{% translate "Dashboard" %}</a>
-                </button>
-                <form action="{% url 'users:logout' %}" method="POST">
-                    {% csrf_token %}
-                    <input type="hidden" name="username" value="{{ request.user.username }}">
-                    <button class="plaintext-button logout" type="submit">
-                        {% translate 'Logout' %}
-                    </button>
-                </form>
-            {% else %}
-                <button class="plaintext-button register">
-                    <a href="{% url 'users:register' %}">{% translate "Register" %}</a>
-                </button>
-                <button class="plaintext-button login">
-                    <a href="{% url 'users:login' %}">{% translate "Login" %}</a>
-                </button>
-            {% endif %}
-        </div>
+<nav class="navbar navbar-expand-lg" style="background-color: #26a69a;" data-bs-theme="light">
+  <div class="container d-flex align-items-center">
+    <a class="navbar-brand" href="{% url 'base:home' %}">
+      <img src="{% get_static_prefix %}global/img/od.png" alt="Logo" style="height: 50px;">
+    </a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
+      <ul class="navbar-nav d-flex align-items-center">
+        <li class="nav-item">
+          <a class="nav-link text-white px-3" href="{% url 'base:services' %}">{% translate "Services" %}</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link text-white px-3" href="{% url 'schedule:schedule' %}">{% translate "Schedule" %}</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link text-white px-3" href="{% url 'base:about' %}">{% translate "About" %}</a>
+        </li>
+        {% if user.is_authenticated %}
+          <li class="nav-item">
+            <a class="nav-link text-white px-3" href="{% url 'users:dashboard' %}">{% translate "Dashboard" %}</a>
+          </li>
+          <li class="nav-item">
+            <form action="{% url 'users:logout' %}" method="POST" class="d-inline">
+              {% csrf_token %}
+              <input type="hidden" name="username" value="{{ request.user.username }}">
+              <button class="btn btn-link nav-link p-0 text-white" type="submit">{% translate 'Logout' %}</button>
+            </form>
+          </li>
+        {% else %}
+          <li class="nav-item">
+            <a class="nav-link text-white px-3" href="{% url 'users:register' %}">{% translate "Register" %}</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link text-white px-3" href="{% url 'users:login' %}">{% translate "Login" %}</a>
+          </li>
+        {% endif %}
+      </ul>
     </div>
-</header>
+  </div>
+</nav>
