@@ -1,5 +1,6 @@
 # dental/views.py
 from django.views.generic import ListView, DetailView, CreateView
+from django.contrib.auth.mixins import LoginRequiredMixin
 from dental.models import Patient
 from django.urls import reverse_lazy
 
@@ -8,7 +9,7 @@ from django.shortcuts import render
 
 from django.db.models import Q
 
-class PatientListView(ListView):
+class PatientListView(LoginRequiredMixin, ListView):
     model = Patient
     template_name = 'dental/patient_list.html'
     context_object_name = 'patients'
@@ -23,11 +24,11 @@ class PatientListView(ListView):
             )
         return queryset.order_by('-registration_date')
 
-class PatientDetailView(DetailView):
+class PatientDetailView(LoginRequiredMixin, DetailView):
     model = Patient
     template_name = 'dental/patient_detail.html'
 
-class PatientCreateView(CreateView):
+class PatientCreateView(LoginRequiredMixin, CreateView):
     model = Patient
     fields = '__all__'
     template_name = 'dental/patient_form.html'
