@@ -1,0 +1,167 @@
+<!-- dental/templates/dental/patient_detail.html -->
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container py-5">
+    <!-- Patient Header -->
+    <div class="d-flex align-items-center gap-4 mb-5">
+        {% if patient.profile_picture %}
+        <img src="{{ patient.profile_picture.url }}" 
+             class="rounded-circle shadow" 
+             alt="{{ patient.name }}"
+             style="width: 120px; height: 120px; object-fit: cover">
+        {% endif %}
+        <div>
+            <h1 class="display-5 fw-bold text-primary mb-2">{{ patient.name }}</h1>
+            <div class="d-flex gap-3 text-muted">
+                <span><i class="bi bi-gender-ambiguous me-2"></i>{{ patient.get_gender_display }}</span>
+                <span><i class="bi bi-calendar3 me-2"></i>{{ patient.date_of_birth|date:"M d, Y" }} ({{ patient.age }} yrs)</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Navigation Tabs -->
+    <ul class="nav nav-tabs mb-4" id="patientTabs" role="tablist">
+        <li class="nav-item" role="presentation">
+            <button class="nav-link active" id="overview-tab" data-bs-toggle="tab" 
+                    data-bs-target="#overview" type="button" role="tab">
+                <i class="bi bi-file-text me-2"></i>Overview
+            </button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="appointments-tab" data-bs-toggle="tab" 
+                    data-bs-target="#appointments" type="button" role="tab">
+                <i class="bi bi-calendar4-range me-2"></i>Appointments
+            </button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="documents-tab" data-bs-toggle="tab" 
+                    data-bs-target="#documents" type="button" role="tab">
+                <i class="bi bi-file-earmark-medical me-2"></i>Documents
+            </button>
+        </li>
+    </ul>
+
+    <!-- Tab Content -->
+    <div class="tab-content">
+        <!-- Overview Tab -->
+        <div class="tab-pane fade show active" id="overview" role="tabpanel">
+            <div class="row g-4">
+                <!-- Contact Card -->
+                <div class="col-md-6">
+                    <div class="card shadow-sm border-0">
+                        <div class="card-header bg-primary text-white">
+                            <h5 class="mb-0"><i class="bi bi-telephone me-2"></i>Contact Information</h5>
+                        </div>
+                        <div class="card-body">
+                            <dl class="row mb-0">
+                                <dt class="col-sm-4">Phone</dt>
+                                <dd class="col-sm-8">{{ patient.phone }}</dd>
+
+                                <dt class="col-sm-4">Email</dt>
+                                <dd class="col-sm-8">{{ patient.email|default:"-" }}</dd>
+
+                                <dt class="col-sm-4">Address</dt>
+                                <dd class="col-sm-8">{{ patient.address|default:"-" }}</dd>
+                            </dl>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Medical History -->
+                <div class="col-md-6">
+                    <div class="card shadow-sm border-0">
+                        <div class="card-header bg-primary text-white">
+                            <h5 class="mb-0"><i class="bi bi-heart-pulse me-2"></i>Medical History</h5>
+                        </div>
+                        <div class="card-body">
+                            {% if patient.medical_history %}
+                                {{ patient.medical_history|linebreaks }}
+                            {% else %}
+                                <div class="text-muted">No medical history recorded</div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Appointments Tab -->
+        <div class="tab-pane fade" id="appointments" role="tabpanel">
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-primary text-white">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0"><i class="bi bi-calendar4-week me-2"></i>Appointment History</h5>
+                        <a href="#" class="btn btn-light btn-sm">
+                            <i class="bi bi-plus-circle me-2"></i>New Appointment
+                        </a>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="list-group list-group-flush">
+                        {% for appointment in patient.appointments.all %}
+                        <div class="list-group-item">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <h6 class="mb-1">{{ appointment.date|date:"M d, Y" }}</h6>
+                                    <small class="text-muted">
+                                        With Dr. {{ appointment.doctor.name }} - {{ appointment.purpose }}
+                                    </small>
+                                </div>
+                                <span class="badge bg-{{ appointment.get_status_color }}"> 
+                                    {{ appointment.get_status_display }}
+                                </span>
+                            </div>
+                        </div>
+                        {% empty %}
+                        <div class="text-center py-4 text-muted">
+                            <i class="bi bi-calendar-x fs-4"></i>
+                            <div class="mt-2">No appointments scheduled</div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Documents Tab -->
+        <div class="tab-pane fade" id="documents" role="tabpanel">
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0"><i class="bi bi-files me-2"></i>Medical Documents</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row g-3">
+                        {% for document in patient.documents.all %}
+                        <div class="col-md-4">
+                            <div class="card border-0 shadow-sm h-100">
+                                <div class="card-body">
+                                    <div class="d-flex align-items-center gap-3">
+                                        <i class="bi bi-file-earmark-pdf fs-3 text-danger"></i>
+                                        <div>
+                                            <h6 class="mb-1">{{ document.title }}</h6>
+                                            <small class="text-muted">{{ document.upload_date|date:"M d, Y" }}</small>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="card-footer bg-transparent">
+                                    <a href="{{ document.file.url }}" class="btn btn-sm btn-outline-primary">
+                                        <i class="bi bi-download me-2"></i>Download
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                        {% empty %}
+                        <div class="col-12 text-center py-4 text-muted">
+                            <i class="bi bi-file-earmark-excel fs-4"></i>
+                            <div class="mt-2">No documents uploaded</div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

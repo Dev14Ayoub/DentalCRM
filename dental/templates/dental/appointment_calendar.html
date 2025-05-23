@@ -1,0 +1,23 @@
+<!-- dental/templates/dental/appointment_calendar.html -->
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="display-5 fw-bold text-primary">
+            <i class="bi bi-calendar4-range me-2"></i>Appointment Calendar
+        </h1>
+        <a href="{% url 'appointment_create' %}" class="btn btn-primary">
+            <i class="bi bi-plus-circle me-2"></i>New Appointment
+        </a>
+    </div>
+
+    <div id="calendar" class="bg-white rounded-3 shadow-sm p-3"></div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.js'></script>
+<script src="{% static 'dental/js/calendar.js' %}"></script>
+{% endblock %}

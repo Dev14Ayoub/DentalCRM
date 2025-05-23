@@ -1,0 +1,38 @@
+// dental/static/dental/scss/custom-bootstrap.scss
+
+// 1. Custom variables (override Bootstrap defaults)
+$primary: #2A9D8F; // Dental teal
+$secondary: #264653; // Navy blue
+$enable-shadows: true;
+$border-radius: .75rem;
+
+// 2. Include Bootstrap core
+@import "bootstrap/scss/functions";
+@import "bootstrap/scss/variables";
+@import "bootstrap/scss/mixins";
+@import "bootstrap/scss/utilities";
+
+// 3. Include required Bootstrap components
+@import "bootstrap/scss/root";
+@import "bootstrap/scss/reboot";
+@import "bootstrap/scss/type";
+@import "bootstrap/scss/containers";
+@import "bootstrap/scss/grid";
+@import "bootstrap/scss/buttons";
+@import "bootstrap/scss/card";
+@import "bootstrap/scss/nav";
+@import "bootstrap/scss/navbar";
+@import "bootstrap/scss/forms";
+@import "bootstrap/scss/utilities/api";
+
+// 4. Custom components
+.dental-card {
+  @extend .card;
+  border: none;
+  box-shadow: $box-shadow-lg;
+  transition: transform 0.3s ease;
+  
+  &:hover {
+    transform: translateY(-5px);
+  }
+}

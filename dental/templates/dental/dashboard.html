@@ -1,0 +1,19 @@
+<!-- dental/templates/dental/dashboard.html -->
+<div class="row row-cols-1 row-cols-md-3 g-4">
+    <div class="col">
+        <div class="card bg-primary text-white shadow-lg">
+            <div class="card-body">
+                <h5><i class="bi bi-people"></i> Total Patients</h5>
+                <h2 class="display-4">{{ total_patients }}</h2>
+            </div>
+        </div>
+    </div>
+    <div class="col">
+        <div class="card bg-info text-white shadow-lg">
+            <div class="card-body">
+                <h5><i class="bi bi-calendar-check"></i> Today's Appointments</h5>
+                <h2 class="display-4">{{ todays_appointments }}</h2>
+            </div>
+        </div>
+    </div>
+</div>

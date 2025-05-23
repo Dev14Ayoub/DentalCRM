@@ -19,6 +19,11 @@
         <li class="nav-item">
           <a class="nav-link text-white px-3" href="{% url 'base:about' %}">{% translate "About" %}</a>
         </li>
+        <li class="nav-item">
+          <a class="nav-link text-white px-3" href="{% url 'appointment_calendar' %}">
+            <i class="bi bi-calendar4-week me-2"></i>{% translate "Calendar" %}
+          </a>
+        </li>
         {% if user.is_authenticated %}
           <li class="nav-item">
             <a class="nav-link text-white px-3" href="{% url 'users:dashboard' %}">{% translate "Dashboard" %}</a>
