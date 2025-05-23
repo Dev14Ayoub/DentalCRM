@@ -1,6 +1,6 @@
 # dental/views.py
 from django.views.generic import ListView, DetailView, CreateView
-from .models import Patient
+from dental.models import Patient
 from django.urls import reverse_lazy
 
 from django.shortcuts import render

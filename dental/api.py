@@ -1,6 +1,8 @@
 # dental/api.py
 from rest_framework import viewsets, serializers
-from .models import Appointment
+from dental.models import Appointment
+from datetime import timedelta
+from django.urls import reverse
 
 class AppointmentSerializer(serializers.ModelSerializer):
     title = serializers.SerializerMethodField()

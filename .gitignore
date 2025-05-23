@@ -1,7 +1,5 @@
-/.env
-/.mypy_cache
-/.pytest_cache
-/db.sqlite3
-/venv
-**/__pycache__
-/static
+*.sqlite3
+.env
+__pycache__/
+*.pyc
+node_modules/

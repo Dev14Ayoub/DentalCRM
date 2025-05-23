@@ -1,6 +1,6 @@
 # dental/urls.py
 from django.urls import path
-from .views import PatientListView, PatientDetailView, appointment_calendar
+from dental.views import PatientListView, PatientDetailView, appointment_calendar
 from django.contrib.auth import views as auth_views
 from rest_framework.routers import DefaultRouter
 from .api import AppointmentViewSet

@@ -1,44 +1,19 @@
-import os
+# config/settings_main.py refactored to remove environment variable usage and centralize in environment.py
+
 import sys
 from pathlib import Path
 from datetime import timedelta
 import dj_database_url
-from dotenv import load_dotenv
 from django.contrib.messages import constants
+from config import settings as config_settings
+from config.settings import environment
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-# Quick-start development settings - unsuitable for production
-# See https://docs.djangoproject.com/en/4.1/howto/deployment/checklist/
-
-# SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = os.environ.get('SECRET_KEY', 'INSECURE')
-
-# SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.environ.get('DEBUG', '1') == '1'
-
 LOCAL_RUN = False
 if 'test' in sys.argv:
     LOCAL_RUN = True
-
-ALLOWED_HOSTS = os.environ.get(
-    'ALLOWED_HOSTS', 'localhost,127.0.0.1'
-).strip().split(',')
-
-CSRF_TRUSTED_ORIGINS = os.environ.get(
-    'CSRF_TRUSTED_ORIGINS', 'https://localhost'
-).strip().split(',')
-
-ROOT_URLCONF = 'config.urls'
-
-WSGI_APPLICATION = 'config.wsgi.app'
-
-DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
-
-PHONENUMBER_DEFAULT_REGION = 'US'  # Set your country code
-PHONENUMBER_DB_FORMAT = 'NATIONAL' 
-# Application definition
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -59,7 +34,7 @@ INSTALLED_APPS = [
 ]
 
 MEDIA_URL = '/media/'
-MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+MEDIA_ROOT = BASE_DIR / 'media'
 
 REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': [
@@ -84,7 +59,7 @@ MIDDLEWARE = [
     'django.middleware.locale.LocaleMiddleware',
 ]
 
-if DEBUG and LOCAL_RUN:
+if environment.DEBUG and LOCAL_RUN:
     INSTALLED_APPS += [
         'debug_toolbar',
     ]
@@ -108,15 +83,8 @@ STATICFILES_DIRS = [
 
 STATIC_ROOT = BASE_DIR / 'static'
 
-# CORS settings
-CORS_ALLOWED_ORIGINS = os.environ.get(
-    'CORS_ALLOWED_ORIGINS', 'https://localhost'
-).strip().split(',')
-
 # Database configuration
-load_dotenv()
-
-if DEBUG and LOCAL_RUN:
+if environment.DEBUG and LOCAL_RUN:
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.sqlite3',
@@ -135,23 +103,9 @@ else:
     }
 
 # Email configuration
-EMAIL_BACKEND = os.environ.get(
-    'EMAIL_BACKEND', 'django.core.mail.backends.smtp.EmailBackend')
-
-EMAIL_HOST = os.environ.get('EMAIL_HOST', 'smtp.gmail.com')
-
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_PORT = 587
-
 EMAIL_USE_TLS = True
-
-EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER', 'your_email@gmail.com')
-
-EMAIL_HOST_PASSWORD = os.environ.get(
-    'EMAIL_HOST_PASSWORD', 'your_email_password')
-
-DEFAULT_FROM_EMAIL = os.environ.get('DEFAULT_FROM_EMAIL', EMAIL_HOST_USER)
-
-EMAIL_LOGO_URL = os.environ.get('EMAIL_LOGO_URL', '')
 
 # Internationalization
 from django.utils.translation import gettext_lazy as _
@@ -199,25 +153,8 @@ SIMPLE_JWT = {
     "ACCESS_TOKEN_LIFETIME": timedelta(minutes=60),
     "REFRESH_TOKEN_LIFETIME": timedelta(days=1),
     "BLACKLIST_AFTER_ROTATION": False,
-    "SIGNING_KEY": os.environ.get('SECRET_KEY_JWT', 'INSECURE'),
     "AUTH_HEADER_TYPES": ('Bearer',),
 }
-
-# Password validation
-AUTH_PASSWORD_VALIDATORS = [
-    {
-        'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
-    },
-]
 
 # Templates
 TEMPLATES = [
@@ -237,3 +174,7 @@ TEMPLATES = [
         },
     },
 ]
+
+CSRF_COOKIE_SECURE = True
+SESSION_COOKIE_SECURE = True
+SECURE_BROWSER_XSS_FILTER = True
