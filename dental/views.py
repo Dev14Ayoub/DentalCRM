@@ -8,6 +8,9 @@ from django.shortcuts import render
 
 
 from django.db.models import Q
+from django.views.generic import DetailView
+
+from .models import Appointment
 
 class PatientListView(LoginRequiredMixin, ListView):
     model = Patient
@@ -40,3 +43,28 @@ class PatientCreateView(LoginRequiredMixin, CreateView):
     
 def appointment_calendar(request):
     return render(request, 'dental/appointment_calendar.html')
+
+
+
+
+class AppointmentListView(ListView):
+    model = Appointment
+    template_name = 'dental/appointment_list.html'
+    context_object_name = 'appointments'
+    paginate_by = 9
+
+    def get_queryset(self):
+        queryset = super().get_queryset().select_related('patient', 'doctor')
+        status = self.request.GET.get('status')
+        date = self.request.GET.get('date')
+
+        if status:
+            queryset = queryset.filter(status=status)
+        if date:
+            queryset = queryset.filter(date_time__date=date)
+            
+        return queryset.order_by('-date_time')
+
+class AppointmentDetailView(LoginRequiredMixin, DetailView):
+    model = Appointment
+    template_name = 'dental/appointment_detail.html'

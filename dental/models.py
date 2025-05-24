@@ -6,6 +6,11 @@ from datetime import date
 from django.contrib.gis.db import models as gis_models
 from phonenumber_field.modelfields import PhoneNumberField
 
+from django.contrib.auth import get_user_model
+from django.utils import timezone
+
+User = get_user_model()
+
 class Patient(models.Model):
     GENDER_CHOICES = [('M', 'Male'), ('F', 'Female'), ('O', 'Other')]
     
@@ -31,6 +36,13 @@ class Patient(models.Model):
             (today.month, today.day) < 
             (self.date_of_birth.month, self.date_of_birth.day)
         )
+    
+    @property
+    def upcoming_appointments(self):
+        return self.appointments.filter(
+            date_time__gte=timezone.now(),
+            status='SCH'
+        ).order_by('date_time')
 
 
 class Doctor(models.Model):
@@ -226,3 +238,56 @@ class MedicalDocument(models.Model):
 
     def file_extension(self):
         return self.file.name.split('.')[-1].upper()
+    
+
+
+
+class Appointment(models.Model):
+    STATUS_CHOICES = [
+        ('SCH', 'Scheduled'),
+        ('COM', 'Completed'),
+        ('CAN', 'Cancelled'),
+        ('RES', 'Rescheduled'),
+    ]
+
+    patient = models.ForeignKey(
+        'Patient',
+        on_delete=models.CASCADE,
+        related_name='appointments'
+    )
+    doctor = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        limit_choices_to={'groups__name': 'Doctors'}
+    )
+    date_time = models.DateTimeField(default=timezone.now)
+    duration = models.PositiveIntegerField(
+        default=30,
+        help_text="Duration in minutes"
+    )
+    purpose = models.CharField(max_length=200)
+    status = models.CharField(
+        max_length=3,
+        choices=STATUS_CHOICES,
+        default='SCH'
+    )
+    notes = models.TextField(blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ['-date_time']
+        verbose_name = 'Appointment'
+        verbose_name_plural = 'Appointments'
+
+    def __str__(self):
+        return f"{self.patient.name} - {self.date_time.strftime('%b %d, %Y %I:%M %p')}"
+
+    def get_status_color(self):
+        status_colors = {
+            'SCH': 'info',
+            'COM': 'success',
+            'CAN': 'danger',
+            'RES': 'warning'
+        }
+        return status_colors.get(self.status, 'secondary')
