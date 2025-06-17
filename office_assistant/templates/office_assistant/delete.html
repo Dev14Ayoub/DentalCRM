@@ -1,0 +1,28 @@
+{% extends 'global/base.html' %}
+{% load i18n %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow">
+                <div class="card-header bg-danger text-white">
+            <h4 class="mb-0">{% trans "Confirm Delete Assistant" %}</h4>
+                </div>
+<div class="card-body">
+    <p>{% trans "Are you sure you want to delete" %} "{{ object }}"?</p>
+    <form method="post">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-danger">
+            <i class="bi bi-trash me-2"></i>{% trans "Delete" %}
+        </button>
+        <a href="{% url 'office_assistant:assistant_list' %}" class="btn btn-secondary">
+            <i class="bi bi-arrow-left me-2"></i>{% trans "Cancel" %}
+        </a>
+    </form>
+</div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

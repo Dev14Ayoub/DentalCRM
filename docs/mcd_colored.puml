@@ -1,0 +1,222 @@
+@startuml
+skinparam class {
+  BackgroundColor<<Patient>> LightBlue
+  BorderColor<<Patient>> Blue
+  BackgroundColor<<Doctor>> LightGreen
+  BorderColor<<Doctor>> Green
+  BackgroundColor<<Clinic>> LightYellow
+  BorderColor<<Clinic>> GoldenRod
+  BackgroundColor<<Schedule>> LightCoral
+  BorderColor<<Schedule>> Red
+  BackgroundColor<<Lead>> LightPink
+  BorderColor<<Lead>> DeepPink
+  BackgroundColor<<OfficeAssistant>> LightCyan
+  BorderColor<<OfficeAssistant>> DarkCyan
+  BackgroundColor<<User>> LightGray
+  BorderColor<<User>> DimGray
+  BackgroundColor<<Admin>> LightSalmon
+  BorderColor<<Admin>> DarkSalmon
+}
+
+package "Patient App" {
+  class Patient <<Patient>> {
+    +id: CharField (PK)
+    +first_name: CharField
+    +last_name: CharField
+    +date_of_birth: DateField
+    +gender: CharField
+    +email: EmailField
+    +phone: CharField
+    +address: TextField
+    +medical_history: TextField
+    +created_by: FK User
+    +primary_doctor: FK Doctor
+  }
+
+  class Insurance <<Patient>> {
+    +provider: CharField
+    +policy_number: CharField
+    +coverage_details: TextField
+    +expiry_date: DateField
+  }
+
+  class TreatmentPlan <<Patient>> {
+    +title: CharField
+    +description: TextField
+    +estimated_cost: Decimal
+    +insurance_coverage: Decimal
+    +patient_responsibility: Decimal
+    +status: CharField
+  }
+
+  class Appointment <<Patient>> {
+    +date: DateField
+    +time: TimeField
+    +duration: Integer
+    +status: CharField
+    +appointment_notes: TextField
+  }
+
+  class AppointmentPhoto <<Patient>> {
+    +photo: ImageField
+    +caption: CharField
+  }
+
+  class PatientNote <<Patient>> {
+    +note: TextField
+  }
+
+  class Payment <<Patient>> {
+    +amount: Decimal
+    +payment_method: CharField
+    +status: CharField
+    +transaction_id: CharField
+  }
+
+  class Prescription <<Patient>> {
+    +medication: CharField
+    +dosage: CharField
+    +instructions: TextField
+  }
+}
+
+package "Schedule App" {
+  class Procedure <<Schedule>> {
+    +name: CharField
+    +price: Decimal
+  }
+
+  class ScheduleAppointment <<Schedule>> {
+    +date: DateField
+    +time: TimeField
+    +is_completed: Boolean
+    +is_confirmed: Boolean
+  }
+
+  class CustomSchedule <<Schedule>> {
+    +procedure: CharField
+    +date: CharField
+    +time: CharField
+    +details: TextField
+  }
+}
+
+package "Doctor App" {
+  class Doctor <<Doctor>> {
+    +first_name: CharField
+    +last_name: CharField
+    +specialization: CharField
+    +phone: CharField
+    +email: EmailField
+  }
+}
+
+package "Clinic App" {
+  class Clinic <<Clinic>> {
+    +name: CharField
+    +monthly_income: Decimal
+    +annual_income: Decimal
+  }
+}
+
+package "Leads App" {
+  class Lead <<Lead>> {
+    +id: CharField (PK)
+    +name: CharField
+    +email: EmailField
+    +phone: CharField
+    +status: CharField
+    +source: CharField
+  }
+}
+
+package "Office Assistant App" {
+  class Task <<OfficeAssistant>> {
+    +title: CharField
+    +description: TextField
+    +due_date: DateField
+    +completed: Boolean
+  }
+
+  class Note <<OfficeAssistant>> {
+    +content: TextField
+  }
+
+  class AppointmentReminder <<OfficeAssistant>> {
+    +appointment_date: DateTime
+    +reminder_sent: Boolean
+  }
+
+  class OfficeAssistant <<OfficeAssistant>> {
+    +username: CharField
+    +first_name: CharField
+    +last_name: CharField
+    +phone_number: CharField
+    +email: EmailField
+  }
+}
+
+package "Users App" {
+  class Profile <<User>> {
+    +phone_number: CharField
+    +special_id: CharField
+  }
+}
+
+package "Administrator App" {
+  class Role <<Admin>> {
+    +name: CharField
+    +description: TextField
+  }
+
+  class Permission <<Admin>> {
+    +name: CharField
+    +codename: CharField
+    +description: TextField
+  }
+
+  class RolePermission <<Admin>> {
+  }
+
+  class UserRole <<Admin>> {
+  }
+}
+
+' Relationships
+
+Patient "1" -- "0..*" Insurance : has
+Patient "1" -- "0..*" TreatmentPlan : has
+Patient "1" -- "0..*" Appointment : has
+Patient "1" -- "0..*" PatientNote : has
+Patient "1" -- "0..*" Payment : has
+Patient "1" -- "0..*" Prescription : has
+
+TreatmentPlan "1" -- "0..*" Appointment : includes
+TreatmentPlan "1" -- "0..*" Payment : includes
+
+Appointment "1" -- "0..*" AppointmentPhoto : has
+Appointment "1" -- "0..*" PatientNote : has
+Appointment "1" -- "0..*" Payment : has
+Appointment "1" -- "0..*" Prescription : has
+
+Doctor "1" -- "0..*" Patient : primary doctor of
+Doctor "1" -- "0..*" Appointment : assigned to
+Doctor "1" -- "0..*" TreatmentPlan : assigned to
+Doctor "1" -- "0..*" Prescription : prescribed by
+Doctor "1" -- "0..*" PatientNote : written by
+Doctor "1" -- "0..*" Payment : processed by
+
+Clinic "0..*" -- "0..*" Lead : has
+Clinic "0..*" -- "0..*" Doctor : has
+Clinic "0..*" -- "0..*" Patient : has
+
+Lead "1" -- "0..*" Clinic : belongs to
+
+User "1" -- "0..1" Profile : has
+
+Role "1" -- "0..*" RolePermission : has
+Permission "1" -- "0..*" RolePermission : has
+Role "1" -- "0..*" UserRole : has
+User "1" -- "0..*" UserRole : has
+
+@enduml

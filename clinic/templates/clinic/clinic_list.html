@@ -1,0 +1,29 @@
+{% extends 'global/base.html' %}
+{% load i18n %}
+{% block title %}{% translate 'Clinics' %}{% endblock title %}
+
+{% block content %}
+<div class="container my-5">
+    <h2 class="mb-4 text-center text-primary">{% translate 'Clinics' %}</h2>
+    <div class="row row-cols-1 row-cols-md-3 g-4">
+        {% for clinic in clinics %}
+        <div class="col">
+            <div class="card h-100 shadow-sm rounded-4 border-primary">
+                <div class="card-body">
+                    <h5 class="card-title">{{ clinic.name }}</h5>
+                    <p class="card-text">
+                        <strong>{% translate "Leads" %}:</strong> {{ clinic.leads.count }}<br>
+                        <strong>{% translate "Doctors" %}:</strong> {{ clinic.doctors.count }}<br>
+                        <strong>{% translate "Patients" %}:</strong> {{ clinic.patients.count }}<br>
+                        <strong>{% translate "Monthly Income" %}:</strong> ${{ clinic.monthly_income }}<br>
+                        <strong>{% translate "Annual Income" %}:</strong> ${{ clinic.annual_income }}
+                    </p>
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <p class="text-center text-muted">{% translate "No clinics available." %}</p>
+        {% endfor %}
+    </div>
+</div>
+{% endblock content %}

@@ -1,0 +1,106 @@
+{% extends 'global/base.html' %}
+{% load static %}
+{% load i18n %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2 class="mb-4">{% trans "Leads Management" %}</h2>
+    <a href="{% url 'leads:create' %}" class="btn btn-primary mb-3">
+        <i class="bi bi-plus-circle"></i> {% trans "Add New Lead" %}
+    </a>
+    
+    <div class="card shadow">
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead class="table-light">
+                        <tr>
+                            <th>{% trans "ID" %}</th>
+                            <th>{% trans "Name" %}</th>
+                            <th>{% trans "Contact" %}</th>
+                            <th>{% trans "Status" %}</th>
+                            <th>{% trans "Source" %}</th>
+                            <th>{% trans "Created" %}</th>
+                            <th>{% trans "Actions" %}</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for lead in object_list %}
+                        <tr class="{% if lead.status == 'converted' %}table-success{% endif %}">
+                            <td><code>{{ lead.id }}</code></td>
+                            <td>{{ lead.name }}</td>
+                            <td>
+                                <div>{{ lead.email }}</div>
+                                <small class="text-muted">{{ lead.phone }}</small>
+                            </td>
+                            <td>
+                                <span class="badge 
+                                    {% if lead.status == 'new' %}bg-secondary
+                                    {% elif lead.status == 'contacted' %}bg-primary
+                                    {% elif lead.status == 'converted' %}bg-success
+                                    {% else %}bg-danger
+                                    {% endif %}">
+                                    {{ lead.get_status_display }}
+                                </span>
+                            </td>
+                            <td>{{ lead.get_source_display }}</td>
+                            <td>{{ lead.created_at|date:"M d, Y" }}</td>
+                            <td>
+                                <div class="btn-group">
+                                    <a href="{% url 'leads:update' lead.id %}" 
+                                       class="btn btn-sm btn-outline-primary"
+                                       data-bs-toggle="tooltip" 
+                                       data-bs-placement="top"
+                                       data-bs-title="{% trans 'Edit Lead' %}">
+                                        <i class="bi bi-pencil"></i>
+                                    </a>
+                                    <a href="{% url 'leads:delete' lead.id %}" 
+                                       class="btn btn-sm btn-outline-danger"
+                                       data-bs-toggle="tooltip" 
+                                       data-bs-placement="top"
+                                       data-bs-title="{% trans 'Delete Lead' %}">
+                                        <i class="bi bi-trash"></i>
+                                    </a>
+                                    {% if lead.status != 'converted' %}
+                                    <form action="{% url 'leads:convert' lead.id %}" method="post" class="d-inline">
+                                        {% csrf_token %}
+                                        <button type="submit" 
+                                                class="btn btn-sm btn-success"
+                                                data-bs-toggle="tooltip" 
+                                                data-bs-placement="top"
+                                                data-bs-title="{% trans 'Convert to Patient' %}">
+                                            <i class="bi bi-check-circle"></i>
+                                        </button>
+                                    </form>
+                                    {% endif %}
+                                </div>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="7" class="text-center">{% trans "No leads found" %}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Initialize tooltips with better settings
+document.addEventListener('DOMContentLoaded', function() {
+    setTimeout(() => {
+        const tooltips = Array.from(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+        tooltips.forEach(t => new bootstrap.Tooltip(t, {
+            placement: 'top',
+            trigger: 'hover',
+            delay: { show: 100, hide: 50 }
+        }));
+    }, 200);
+});
+</script>
+{% endblock %}

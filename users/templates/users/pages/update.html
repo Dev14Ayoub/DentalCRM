@@ -1,0 +1,104 @@
+{% extends 'global/base.html' %}
+{% load i18n %}
+{% block title %}{% translate 'Update Profile' %}{% endblock title %}
+
+{% block content %}
+    <div class="main-content center container article">
+        <h2 class="update-page">{% translate 'Update Profile' %}</h2>
+        {% include 'global/partials/messages.html' %}
+        <div class="update-form-wrapper">
+            <form id="updateForm" class="main-form p-4 rounded-4 shadow-lg" action="{% url 'users:update' %}" method="POST" enctype="multipart/form-data" style="background: linear-gradient(135deg, #dbe9ff, #f7fbff);">
+                {% csrf_token %}
+                {% include 'global/partials/form.html' %}
+                <!-- Removed the Save Changes button as per user request -->
+            </form>
+        </div>
+    </div>
+
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css" rel="stylesheet"/>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            var input = document.querySelector('input[type="file"][name="photo"]');
+            var imagePreviewContainer = document.createElement('div');
+            imagePreviewContainer.style.maxWidth = '300px';
+            imagePreviewContainer.style.maxHeight = '300px';
+            imagePreviewContainer.style.marginBottom = '1rem';
+            imagePreviewContainer.style.display = 'none';
+            var image = document.createElement('img');
+            image.style.maxWidth = '100%';
+            image.style.maxHeight = '300px';
+            image.style.borderRadius = '50%';
+            imagePreviewContainer.appendChild(image);
+            input.parentNode.insertBefore(imagePreviewContainer, input.nextSibling);
+
+            var cropper;
+
+            input.addEventListener('change', function (e) {
+                if (e.target.files && e.target.files.length > 0) {
+                    var file = e.target.files[0];
+                    var reader = new FileReader();
+                    reader.onload = function (event) {
+                        image.src = event.target.result;
+                        imagePreviewContainer.style.display = 'block';
+
+                        if (cropper) {
+                            cropper.destroy();
+                        }
+                        cropper = new Cropper(image, {
+                            aspectRatio: 1,
+                            viewMode: 1,
+                            dragMode: 'move',
+                            autoCropArea: 1,
+                            responsive: true,
+                            background: false,
+                        });
+                    };
+                    reader.readAsDataURL(file);
+                }
+            });
+
+            document.getElementById('updateForm').addEventListener('submit', function (e) {
+                e.preventDefault();
+                if (cropper) {
+                    cropper.getCroppedCanvas().toBlob(function (blob) {
+                        var formData = new FormData();
+                        var inputs = document.querySelectorAll('#updateForm input, #updateForm button, #updateForm select, #updateForm textarea');
+                        inputs.forEach(function(input) {
+                            if (input.name !== 'photo' && input.type !== 'file') {
+                                if (input.type === 'checkbox' || input.type === 'radio') {
+                                    if (input.checked) {
+                                        formData.append(input.name, input.value);
+                                    }
+                                } else {
+                                    formData.append(input.name, input.value);
+                                }
+                            }
+                        });
+                        formData.append('photo', blob, 'cropped.png');
+                        fetch("{% url 'users:update' %}", {
+                            method: 'POST',
+                            headers: {
+                                'X-CSRFToken': '{{ csrf_token }}'
+                            },
+                            body: formData,
+                        }).then(response => {
+                            if (response.redirected) {
+                                window.location.href = response.url;
+                            } else {
+                                return response.text().then(text => {
+                                    document.body.innerHTML = text;
+                                });
+                            }
+                        }).catch(error => {
+                            alert('Error uploading image.');
+                            console.error(error);
+                        });
+                    });
+                } else {
+                    this.submit();
+                }
+            });
+        });
+    </script>
+{% endblock content %}

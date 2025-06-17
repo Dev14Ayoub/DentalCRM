@@ -1,0 +1,54 @@
+{% load i18n %}
+{% load form_tags %}
+<form class="main-form p-4 rounded-4 shadow-lg" action="{{ form_action }}" method="POST" enctype="multipart/form-data" style="background: linear-gradient(135deg, #dbe9ff, #f7fbff);">
+    {% csrf_token %}
+    <div class="form-content d-flex flex-row flex-wrap align-items-center justify-content-start">
+        {% for field in form %}
+            <div class="form-group d-flex flex-column me-3 mb-4" style="min-width: 200px;">
+                <label for="{{ field.id_for_label }}" class="form-label fw-bold text-primary mb-2">
+                    {{ field.label }}
+                </label>
+                {{ field|add_class:"form-control border-0 shadow-sm rounded-pill px-3 py-2 bg-white text-dark" }}
+                {% if field.help_text %}
+                    <p class="help-text text-muted small fst-italic">
+                        {{ field.help_text }}
+                    </p>
+                {% endif %}
+                {{ field.errors }}
+            </div>
+        {% endfor %}
+    </div>
+    {% if form.errors %}
+        <div class="form-content">
+            <div class="form-group">
+                <div class="message message-error alert alert-danger rounded-pill px-3 py-2">
+                    {% translate 'Please, fix the errors in the form' %}.
+                </div>
+            </div>
+        </div>
+    {% endif %}
+    <div class="form-content d-flex flex-row justify-content-start mt-4">
+        {% if update %}
+            <div class="form-buttons form-group me-3">
+                <button class="btn btn-outline-primary rounded-pill px-4 py-2 shadow-sm">
+                    <a href="{% url 'users:change_password' %}" class="text-decoration-none text-primary fw-semibold">{% translate 'Change Password' %}</a>
+                </button>
+            </div>
+        {% endif %}
+        <div class="form-buttons form-group">
+            <button type="submit" class="btn btn-primary rounded-pill px-5 py-3 shadow fw-bold text-white" style="background: linear-gradient(45deg, #6ea8fe, #a3c1ff); border: none; transition: all 0.3s ease;">
+                {% if button_label %}
+                    {{ button_label }}
+                {% else %}
+                    {% translate 'Register' %}
+                {% endif %}
+            </button>
+        </div>
+    </div>
+</form>
+
+<style>
+    .btn-primary:hover {
+        background: linear-gradient(45deg, #4a7be0, #6a9fff) !important;
+    }
+</style>

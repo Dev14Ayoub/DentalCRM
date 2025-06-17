@@ -1,0 +1,238 @@
+{% extends 'global/base.html' %}
+{% load static %}
+{% load i18n %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-6">
+            <!-- Header -->
+            <div class="text-center mb-4">
+                <div class="mb-3">
+                    <i class="bi bi-exclamation-triangle display-1 text-danger"></i>
+                </div>
+                <h2 class="text-danger">{% trans "Delete Patient" %}</h2>
+                <p class="text-muted">{% trans "This action cannot be undone" %}</p>
+            </div>
+
+            <!-- Patient Info Card -->
+            <div class="card shadow mb-4">
+                <div class="card-header bg-danger text-white">
+                    <div class="d-flex align-items-center justify-content-center">
+                        <div class="avatar-sm me-3">
+                            <span>{{ patient.first_name|slice:":1" }}{{ patient.last_name|slice:":1" }}</span>
+                        </div>
+                        <div class="text-center">
+                            <h5 class="mb-0">{{ patient.full_name }}</h5>
+                            <small>ID: {{ patient.id }} | {% trans "Age" %}: {{ patient.age }} {% trans "years" %}</small>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="row text-center">
+                        <div class="col-4">
+                            <div class="p-2">
+                                <div class="h5 mb-0 text-primary">{{ patient.treatment_plans.count }}</div>
+                                <div class="small text-muted">{% trans "Treatment Plans" %}</div>
+                            </div>
+                        </div>
+                        <div class="col-4">
+                            <div class="p-2">
+                                <div class="h5 mb-0 text-success">{{ patient.appointments.count }}</div>
+                                <div class="small text-muted">{% trans "Appointments" %}</div>
+                            </div>
+                        </div>
+                        <div class="col-4">
+                            <div class="p-2">
+                                <div class="h5 mb-0 text-warning">{{ patient.payments.count }}</div>
+                                <div class="small text-muted">{% trans "Payments" %}</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Warning Card -->
+            <div class="card shadow mb-4">
+                <div class="card-header bg-warning text-dark">
+                    <h5 class="mb-0">
+                        <i class="bi bi-exclamation-triangle"></i> {% trans "Warning" %}
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <p class="mb-3">
+                        {% trans "Deleting this patient will permanently remove all associated data including:" %}
+                    </p>
+                    <ul class="list-unstyled">
+                        <li class="mb-2">
+                            <i class="bi bi-check text-danger me-2"></i>
+                            {% trans "Personal information and contact details" %}
+                        </li>
+                        <li class="mb-2">
+                            <i class="bi bi-check text-danger me-2"></i>
+                            {% trans "Medical history and notes" %}
+                        </li>
+                        <li class="mb-2">
+                            <i class="bi bi-check text-danger me-2"></i>
+                            {% trans "All treatment plans and progress" %}
+                        </li>
+                        <li class="mb-2">
+                            <i class="bi bi-check text-danger me-2"></i>
+                            {% trans "Appointment history and photos" %}
+                        </li>
+                        <li class="mb-2">
+                            <i class="bi bi-check text-danger me-2"></i>
+                            {% trans "Payment records and financial data" %}
+                        </li>
+                        <li class="mb-2">
+                            <i class="bi bi-check text-danger me-2"></i>
+                            {% trans "Prescriptions and medication history" %}
+                        </li>
+                        <li class="mb-2">
+                            <i class="bi bi-check text-danger me-2"></i>
+                            {% trans "Insurance information" %}
+                        </li>
+                    </ul>
+                    <div class="alert alert-danger mt-3">
+                        <strong>{% trans "This action cannot be undone!" %}</strong>
+                        {% trans "Make sure you have backed up any important information before proceeding." %}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Confirmation Form -->
+            <div class="card shadow">
+                <div class="card-header bg-light">
+                    <h5 class="mb-0">{% trans "Confirm Deletion" %}</h5>
+                </div>
+                <div class="card-body">
+                    <form method="post">
+                        {% csrf_token %}
+                        <div class="mb-4">
+                            <label for="confirmName" class="form-label">
+                                {% trans "Type the patient's full name to confirm deletion:" %}
+                            </label>
+                            <input type="text" id="confirmName" class="form-control" 
+                                   placeholder="{{ patient.full_name }}" required>
+                            <div class="form-text">
+                                {% trans "Type" %}: <strong>{{ patient.full_name }}</strong>
+                            </div>
+                        </div>
+
+                        <div class="mb-4">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="confirmUnderstand" required>
+                                <label class="form-check-label" for="confirmUnderstand">
+                                    {% trans "I understand that this action cannot be undone and will permanently delete all patient data." %}
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="d-flex justify-content-between">
+                            <a href="{% url 'patient:detail' patient.pk %}" class="btn btn-secondary">
+                                <i class="bi bi-arrow-left"></i> {% trans "Cancel" %}
+                            </a>
+                            <button type="submit" class="btn btn-danger" id="deleteBtn" disabled>
+                                <i class="bi bi-trash"></i> {% trans "Delete Permanently" %}
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+    .avatar-sm {
+        width: 40px;
+        height: 40px;
+        background: rgba(255, 255, 255, 0.2);
+        color: white;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.875rem;
+        font-weight: 600;
+    }
+
+    .card {
+        border: none;
+        box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.15);
+    }
+
+    .form-label {
+        font-weight: 600;
+        color: #5a5c69;
+    }
+
+    .btn {
+        font-weight: 600;
+        padding: 0.5rem 1.5rem;
+    }
+
+    .form-control:focus {
+        border-color: #dc3545;
+        box-shadow: 0 0 0 0.2rem rgba(220, 53, 69, 0.25);
+    }
+
+    .alert {
+        border: none;
+        border-radius: 0.5rem;
+    }
+
+    .list-unstyled li {
+        padding: 0.25rem 0;
+    }
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+$(document).ready(function() {
+    const confirmName = $('#confirmName');
+    const confirmCheck = $('#confirmUnderstand');
+    const deleteBtn = $('#deleteBtn');
+    const expectedName = '{{ patient.full_name }}';
+
+    function checkForm() {
+        const nameMatch = confirmName.val().trim().toLowerCase() === expectedName.toLowerCase();
+        const checkboxChecked = confirmCheck.is(':checked');
+        
+        if (nameMatch && checkboxChecked) {
+            deleteBtn.prop('disabled', false).removeClass('btn-outline-danger').addClass('btn-danger');
+        } else {
+            deleteBtn.prop('disabled', true).removeClass('btn-danger').addClass('btn-outline-danger');
+        }
+    }
+
+    confirmName.on('input', checkForm);
+    confirmCheck.on('change', checkForm);
+
+    // Form submission
+    $('form').on('submit', function(e) {
+        const nameMatch = confirmName.val().trim().toLowerCase() === expectedName.toLowerCase();
+        const checkboxChecked = confirmCheck.is(':checked');
+        
+        if (!nameMatch || !checkboxChecked) {
+            e.preventDefault();
+            alert('{% trans "Please confirm the patient name and check the understanding checkbox." %}');
+            return false;
+        }
+
+        const submitBtn = deleteBtn;
+        submitBtn.prop('disabled', true).html('<i class="spinner-border spinner-border-sm me-2"></i>Deleting...');
+        
+        // Show final confirmation
+        if (!confirm('{% trans "Are you absolutely sure? This will permanently delete all patient data." %}')) {
+            e.preventDefault();
+            submitBtn.prop('disabled', false).html('<i class="bi bi-trash"></i> Delete Permanently');
+            return false;
+        }
+    });
+});
+</script>
+{% endblock %}

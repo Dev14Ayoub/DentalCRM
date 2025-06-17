@@ -1,0 +1,56 @@
+{% extends 'global/base.html' %}
+{% load i18n %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0">{{ object.username }}</h4>
+                </div>
+                <div class="card-body">
+                    <dl class="row">
+                        <dt class="col-sm-4">{% trans "ID" %}</dt>
+                        <dd class="col-sm-8"><code>{{ object.id }}</code></dd>
+
+                        <dt class="col-sm-4">{% trans "Profile Photo" %}</dt>
+                        <dd class="col-sm-8">
+                            {% if object.profile_photo %}
+                                <img src="{{ object.profile_photo.url }}" alt="{{ object.first_name }}" class="rounded-circle" style="width: 150px; height: 150px; object-fit: cover;">
+                            {% else %}
+                                <span class="text-muted">{% trans "No Photo" %}</span>
+                            {% endif %}
+                        </dd>
+
+                        <dt class="col-sm-4">{% trans "First Name" %}</dt>
+                        <dd class="col-sm-8">{{ object.first_name }}</dd>
+
+                        <dt class="col-sm-4">{% trans "Last Name" %}</dt>
+                        <dd class="col-sm-8">{{ object.last_name }}</dd>
+
+                        <dt class="col-sm-4">{% trans "Username" %}</dt>
+                        <dd class="col-sm-8">{{ object.username }}</dd>
+
+                        <dt class="col-sm-4">{% trans "Email" %}</dt>
+                        <dd class="col-sm-8">{{ object.email }}</dd>
+
+                        <dt class="col-sm-4">{% trans "Phone Number" %}</dt>
+                        <dd class="col-sm-8">{{ object.phone_number }}</dd>
+                    </dl>
+
+                    <a href="{% url 'office_assistant:assistant_update' object.pk %}" class="btn btn-primary">
+                        <i class="bi bi-pencil-square me-2"></i>{% trans "Edit" %}
+                    </a>
+                    <a href="{% url 'office_assistant:assistant_delete' object.pk %}" class="btn btn-danger">
+                        <i class="bi bi-trash me-2"></i>{% trans "Delete" %}
+                    </a>
+                    <a href="{% url 'office_assistant:assistant_list' %}" class="btn btn-secondary">
+                        <i class="bi bi-arrow-left me-2"></i>{% trans "Back to list" %}
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

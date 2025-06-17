@@ -1,0 +1,126 @@
+{% extends 'global/base.html' %}
+{% load static %}
+{% load i18n %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow">
+                <div class="card-header bg-warning text-dark">
+                    <h4 class="mb-0">{% trans "Update Lead" %} #{{ object.id }}</h4>
+                </div>
+                
+                <div class="card-body">
+                    <form method="post" novalidate>
+                        {% csrf_token %}
+                        
+                        {% if form.non_field_errors %}
+                            <div class="alert alert-danger">
+                                {% for error in form.non_field_errors %}
+                                    {{ error }}
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+
+                        <div class="row g-3">
+                            <!-- Name Field -->
+                            <div class="col-md-6">
+                                <label for="{{ form.name.id_for_label }}" class="form-label">
+                                    {% trans "Full Name" %}
+                                </label>
+                                {{ form.name }}
+                                {% for error in form.name.errors %}
+                                    <div class="invalid-feedback d-block">{{ error }}</div>
+                                {% endfor %}
+                            </div>
+
+                            <!-- Email Field -->
+                            <div class="col-md-6">
+                                <label for="{{ form.email.id_for_label }}" class="form-label">
+                                    {% trans "Email" %}
+                                </label>
+                                {{ form.email }}
+                                {% for error in form.email.errors %}
+                                    <div class="invalid-feedback d-block">{{ error }}</div>
+                                {% endfor %}
+                            </div>
+
+                            <!-- Phone Field -->
+                            <div class="col-md-6">
+                                <label for="{{ form.phone.id_for_label }}" class="form-label">
+                                    {% trans "Phone" %}
+                                </label>
+                                {{ form.phone }}
+                                {% for error in form.phone.errors %}
+                                    <div class="invalid-feedback d-block">{{ error }}</div>
+                                {% endfor %}
+                            </div>
+
+                            <!-- Status Field -->
+                            <div class="col-md-6">
+                                <label for="{{ form.status.id_for_label }}" class="form-label">
+                                    {% trans "Status" %}
+                                </label>
+                                {{ form.status }}
+                                {% for error in form.status.errors %}
+                                    <div class="invalid-feedback d-block">{{ error }}</div>
+                                {% endfor %}
+                            </div>
+
+                            <!-- Source Field -->
+                            <div class="col-md-6">
+                                <label for="{{ form.source.id_for_label }}" class="form-label">
+                                    {% trans "Source" %}
+                                </label>
+                                {{ form.source }}
+                                {% for error in form.source.errors %}
+                                    <div class="invalid-feedback d-block">{{ error }}</div>
+                                {% endfor %}
+                            </div>
+
+                            <!-- Notes Field -->
+                            <div class="col-12">
+                                <label for="{{ form.notes.id_for_label }}" class="form-label">
+                                    {% trans "Notes" %}
+                                </label>
+                                {{ form.notes }}
+                                {% for error in form.notes.errors %}
+                                    <div class="invalid-feedback d-block">{{ error }}</div>
+                                {% endfor %}
+                            </div>
+                        </div>
+
+                        <div class="mt-4 d-flex justify-content-between">
+                            <button type="submit" class="btn btn-warning">
+                                <i class="bi bi-pencil-square me-2"></i>{% trans "Update Lead" %}
+                            </button>
+                            <a href="{% url 'leads:detail' object.id %}" class="btn btn-outline-secondary">
+                                <i class="bi bi-eye me-2"></i>{% trans "View Details" %}
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    // Phone formatting with existing value handling
+    const phoneField = document.getElementById('{{ form.phone.id_for_label }}');
+    const initialValue = phoneField.value.replace(/\D/g, '');
+    
+    if (initialValue.length === 10) {
+        phoneField.value = initialValue.replace(/(\d{3})(\d{3})(\d{4})/, '($1) $2-$3');
+    }
+
+    phoneField.addEventListener('input', function(e) {
+        let value = e.target.value.replace(/\D/g, '');
+        if (value.length > 10) value = value.slice(0, 10);
+        e.target.value = value.replace(/(\d{3})(\d{3})(\d{4})/, '($1) $2-$3');
+    });
+</script>
+{% endblock %}

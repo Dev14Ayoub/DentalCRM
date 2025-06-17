@@ -1,0 +1,238 @@
+{% extends 'global/base.html' %}
+{% load static %}
+{% load i18n %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <!-- Header -->
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <div>
+                    <h2>{% trans "New Patient" %}</h2>
+                    <p class="text-muted mb-0">{% trans "Add a new patient to your practice" %}</p>
+                </div>
+                <a href="{% url 'patient:list' %}" class="btn btn-outline-secondary">
+                    <i class="bi bi-arrow-left"></i> {% trans "Back to List" %}
+                </a>
+            </div>
+
+            <!-- Form Card -->
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">
+                        <i class="bi bi-person-plus"></i> {% trans "Patient Information" %}
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <form method="post">
+                        {% csrf_token %}
+                        
+                        <!-- Personal Information -->
+                        <div class="row mb-4">
+                            <div class="col-12">
+                                <h6 class="text-primary border-bottom pb-2 mb-3">
+                                    <i class="bi bi-person"></i> {% trans "Personal Information" %}
+                                </h6>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="{{ form.first_name.id_for_label }}" class="form-label">
+                                    {% trans "First Name" %} <span class="text-danger">*</span>
+                                </label>
+                                {{ form.first_name }}
+                                {% if form.first_name.errors %}
+                                <div class="text-danger small">{{ form.first_name.errors.0 }}</div>
+                                {% endif %}
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="{{ form.last_name.id_for_label }}" class="form-label">
+                                    {% trans "Last Name" %} <span class="text-danger">*</span>
+                                </label>
+                                {{ form.last_name }}
+                                {% if form.last_name.errors %}
+                                <div class="text-danger small">{{ form.last_name.errors.0 }}</div>
+                                {% endif %}
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="{{ form.date_of_birth.id_for_label }}" class="form-label">
+                                    {% trans "Date of Birth" %} <span class="text-danger">*</span>
+                                </label>
+                                {{ form.date_of_birth }}
+                                {% if form.date_of_birth.errors %}
+                                <div class="text-danger small">{{ form.date_of_birth.errors.0 }}</div>
+                                {% endif %}
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="{{ form.gender.id_for_label }}" class="form-label">
+                                    {% trans "Gender" %} <span class="text-danger">*</span>
+                                </label>
+                                {{ form.gender }}
+                                {% if form.gender.errors %}
+                                <div class="text-danger small">{{ form.gender.errors.0 }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <!-- Contact Information -->
+                        <div class="row mb-4">
+                            <div class="col-12">
+                                <h6 class="text-primary border-bottom pb-2 mb-3">
+                                    <i class="bi bi-telephone"></i> {% trans "Contact Information" %}
+                                </h6>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="{{ form.phone.id_for_label }}" class="form-label">
+                                    {% trans "Phone Number" %} <span class="text-danger">*</span>
+                                </label>
+                                {{ form.phone }}
+                                {% if form.phone.errors %}
+                                <div class="text-danger small">{{ form.phone.errors.0 }}</div>
+                                {% endif %}
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="{{ form.email.id_for_label }}" class="form-label">
+                                    {% trans "Email Address" %}
+                                </label>
+                                {{ form.email }}
+                                {% if form.email.errors %}
+                                <div class="text-danger small">{{ form.email.errors.0 }}</div>
+                                {% endif %}
+                            </div>
+                            <div class="col-12 mb-3">
+                                <label for="{{ form.address.id_for_label }}" class="form-label">
+                                    {% trans "Address" %}
+                                </label>
+                                {{ form.address }}
+                                {% if form.address.errors %}
+                                <div class="text-danger small">{{ form.address.errors.0 }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <!-- Medical Information -->
+                        <div class="row mb-4">
+                            <div class="col-12">
+                                <h6 class="text-primary border-bottom pb-2 mb-3">
+                                    <i class="bi bi-heart-pulse"></i> {% trans "Medical Information" %}
+                                </h6>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="{{ form.primary_doctor.id_for_label }}" class="form-label">
+                                    {% trans "Primary Doctor" %}
+                                </label>
+                                {{ form.primary_doctor }}
+                                {% if form.primary_doctor.errors %}
+                                <div class="text-danger small">{{ form.primary_doctor.errors.0 }}</div>
+                                {% endif %}
+                            </div>
+                            <div class="col-12 mb-3">
+                                <label for="{{ form.medical_history.id_for_label }}" class="form-label">
+                                    {% trans "Medical History" %}
+                                </label>
+                                {{ form.medical_history }}
+                                {% if form.medical_history.errors %}
+                                <div class="text-danger small">{{ form.medical_history.errors.0 }}</div>
+                                {% endif %}
+                                <div class="form-text">
+                                    {% trans "Include any relevant medical conditions, allergies, medications, etc." %}
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Initial Note -->
+                        {% if form.initial_note %}
+                        <div class="row mb-4">
+                            <div class="col-12">
+                                <h6 class="text-primary border-bottom pb-2 mb-3">
+                                    <i class="bi bi-journal-text"></i> {% trans "Initial Note" %}
+                                </h6>
+                            </div>
+                            <div class="col-12 mb-3">
+                                <label for="{{ form.initial_note.id_for_label }}" class="form-label">
+                                    {% trans "Initial Note" %}
+                                </label>
+                                {{ form.initial_note }}
+                                {% if form.initial_note.errors %}
+                                <div class="text-danger small">{{ form.initial_note.errors.0 }}</div>
+                                {% endif %}
+                                <div class="form-text">
+                                    {% trans "Add any initial observations or notes about the patient (optional)" %}
+                                </div>
+                            </div>
+                        </div>
+                        {% endif %}
+
+                        <!-- Form Actions -->
+                        <div class="d-flex justify-content-between">
+                            <a href="{% url 'patient:list' %}" class="btn btn-secondary">
+                                <i class="bi bi-x-lg"></i> {% trans "Cancel" %}
+                            </a>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="bi bi-check-lg"></i> {% trans "Create Patient" %}
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+    .card {
+        border: none;
+        box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.15);
+    }
+
+    .form-label {
+        font-weight: 600;
+        color: #5a5c69;
+    }
+
+    .text-danger {
+        font-size: 0.875rem;
+    }
+
+    .border-bottom {
+        border-bottom: 2px solid #e3e6f0 !important;
+    }
+
+    .btn {
+        font-weight: 600;
+        padding: 0.5rem 1.5rem;
+    }
+
+    .form-control:focus,
+    .form-select:focus {
+        border-color: #4e73df;
+        box-shadow: 0 0 0 0.2rem rgba(78, 115, 223, 0.25);
+    }
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+$(document).ready(function() {
+    // Set default date to today for new patients
+    const today = new Date().toISOString().split('T')[0];
+    if (!$('#id_date_of_birth').val()) {
+        // Set a reasonable default birth date (30 years ago)
+        const thirtyYearsAgo = new Date();
+        thirtyYearsAgo.setFullYear(thirtyYearsAgo.getFullYear() - 30);
+        $('#id_date_of_birth').val(thirtyYearsAgo.toISOString().split('T')[0]);
+    }
+
+    // Form validation
+    $('form').on('submit', function() {
+        const submitBtn = $(this).find('button[type="submit"]');
+        submitBtn.prop('disabled', true).html('<i class="spinner-border spinner-border-sm me-2"></i>Creating...');
+        
+        setTimeout(function() {
+            submitBtn.prop('disabled', false).html('<i class="bi bi-check-lg"></i> Create Patient');
+        }, 5000);
+    });
+});
+</script>
+{% endblock %}

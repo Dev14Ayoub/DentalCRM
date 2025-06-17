@@ -1,0 +1,502 @@
+{% extends 'global/base.html' %}
+{% load static %}
+{% load i18n %}
+
+{% block title %}{% translate 'Dashboard' %}{% endblock title %}
+
+{% block content %}
+<div class="dashboard-container">
+    <div class="dashboard-header">
+        <h1 class="dashboard-title">{% translate 'Dashboard' %}</h1>
+        <div class="dashboard-actions">
+            <a href="{% url 'users:update' %}" class="btn btn-update-profile">
+                <i class="bi bi-person-gear me-2"></i> {% translate "Update Profile" %}
+            </a>
+        </div>
+    </div>
+
+    {% include 'global/partials/messages.html' %}
+    
+    <div class="dashboard-content">
+        <!-- Current Appointments Card -->
+        <div class="dashboard-card">
+            <div class="card-header">
+                <h2><i class="bi bi-calendar-check me-2"></i> {% translate 'Your Appointments' %}</h2>
+                <span class="badge bg-primary">{{ appointments|length }}</span>
+            </div>
+            
+            {% if appointments %}
+            <div class="table-responsive">
+                <table class="dashboard-table">
+                    <thead>
+                        <tr>
+                            <th class="first-column">{% translate 'ID' %}</th>
+                            <th>{% translate 'Name' %}</th>
+                            <th>{% translate 'Procedure' %}</th>
+                            <th>{% translate 'Date' %}</th>
+                            <th>{% translate 'Time' %}</th>  <!-- Changed from Heure to Time -->
+                            <th>{% translate 'Price' %}</th>
+                            <th>{% translate 'Status' %}</th>
+                            <th>{% translate 'Actions' %}</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for appointment in appointments %}
+                        <tr>
+                            <td class="first-column">
+                                <a href="{% url 'users:appointment_detail' appointment.id %}" class="appointment-id">
+                                    #{{ appointment.id }}
+                                </a>
+                            </td>
+                            <td>{{ appointment.first_name }} {{ appointment.last_name }}</td>
+                            <td>{{ appointment.procedure }}</td>
+                            <td>{{ appointment.date }}</td>
+                            <td>{{ appointment.time }}</td>  <!-- Time column -->
+                            <td>R${{ appointment.procedure.price }}</td>
+                            <td>
+                                {% if appointment.is_confirmed %}
+                                <span class="badge bg-success">{% translate 'Confirmed' %}</span>
+                                {% else %}
+                                <span class="badge bg-warning">{% translate 'Pending' %}</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <button class="btn btn-sm btn-warning toggle-confirm-btn" data-appointment-id="{{ appointment.id }}">
+                                    {% if appointment.is_confirmed %}
+                                    {% translate "Unconfirm" %}
+                                    {% else %}
+                                    {% translate "Confirm" %}
+                                    {% endif %}
+                                </button>
+                            </td>
+                            <td>                          
+                                <form class="inline-form form-delete" action="{% url 'users:appointment_delete' %}" method="POST">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="id" value="{{ appointment.id }}">
+                                    <button class="btn btn-sm btn-danger" type="submit" title="{% translate 'Cancel Appointment' %}">
+                                        <i class="bi bi-x-circle"></i>
+                                    </button>
+                                </form>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <div class="no-appointments">
+                <div class="icon-container">
+                    <i class="bi bi-calendar-x"></i>
+                </div>
+                <h3>{% translate 'You have no appointments scheduled' %}</h3>
+                <p>{% translate 'Schedule your next appointment today' %}</p>
+                <a href="{% url 'schedule:schedule' %}" class="btn btn-primary">
+                    <i class="bi bi-plus-circle me-2"></i> {% translate 'Schedule Appointment' %}
+                </a>
+            </div>
+            {% endif %}
+        </div>
+
+        <!-- Treatment History Card -->
+        {% if closed_appointments %}
+        <div class="dashboard-card">
+            <div class="card-header">
+                <h2><i class="bi bi-clock-history me-2"></i> {% translate 'Treatment History' %}</h2>
+                <span class="badge bg-secondary">{{ closed_appointments|length }}</span>
+            </div>
+            
+            <div class="table-responsive">
+                <table class="dashboard-table">
+                    <thead>
+                        <tr>
+                            <th class="first-column">{% translate 'ID' %}</th>
+                            <th>{% translate 'Procedure' %}</th>
+                            <th>{% translate 'Date' %}</th>
+                            <th>{% translate 'Time' %}</th>  <!-- Changed from Heure to Time -->
+                            <th>{% translate 'Price' %}</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for appointment in closed_appointments %}
+                        <tr>
+                            <td class="first-column">
+                                <a href="{% url 'users:appointment_detail' appointment.id %}" class="appointment-id">
+                                    #{{ appointment.id }}
+                                </a>
+                            </td>
+                            <td>{{ appointment.procedure }}</td>
+                            <td>{{ appointment.date }}</td>
+                            <td>{{ appointment.time }}</td>  <!-- Time column -->
+                            <td>R${{ appointment.procedure.price }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<style>
+    /* ===== DASHBOARD STYLES ===== */
+    .dashboard-container {
+        padding: 2rem 1.5rem;
+        max-width: 1200px;
+        margin: 0 auto;
+    }
+    
+    .dashboard-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 2rem;
+        padding-bottom: 1rem;
+        border-bottom: 2px solid #e0f7fa;
+    }
+    
+    .dashboard-title {
+        font-size: 2.2rem;
+        font-weight: 700;
+        color: #1976d2;
+        margin: 0;
+        position: relative;
+    }
+    
+    .dashboard-title::after {
+        content: "";
+        position: absolute;
+        bottom: -15px;
+        left: 0;
+        width: 60px;
+        height: 4px;
+        background: linear-gradient(to right, #1976d2, #2196f3);
+        border-radius: 2px;
+    }
+    
+    .btn-update-profile {
+        background: linear-gradient(135deg, #1976d2, #2196f3);
+        color: white;
+        border: none;
+        border-radius: 8px;
+        padding: 0.7rem 1.5rem;
+        font-weight: 600;
+        transition: all 0.3s;
+        display: inline-flex;
+        align-items: center;
+    }
+    
+    .btn-update-profile:hover {
+        background: linear-gradient(135deg, #1565c0, #0d8bf2);
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(33, 150, 243, 0.3);
+        color: white;
+    }
+    
+    .dashboard-content {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 2rem;
+    }
+    
+    .dashboard-card {
+        background: rgba(255, 255, 255, 0.95);
+        border-radius: 12px;
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        padding: 2rem;
+        border: 1px solid rgba(0, 0, 0, 0.05);
+        position: relative;
+        overflow: hidden;
+    }
+    
+    /* Card header with badge */
+    .card-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1.5rem;
+        padding-bottom: 1rem;
+        border-bottom: 1px solid #e0f7fa;
+    }
+    
+    .card-header h2 {
+        font-size: 1.5rem;
+        font-weight: 600;
+        color: #1976d2;
+        margin: 0;
+        display: flex;
+        align-items: center;
+    }
+    
+    .badge {
+        font-size: 0.9rem;
+        font-weight: 600;
+        padding: 0.35rem 0.75rem;
+        border-radius: 20px;
+    }
+    
+    /* Table styling - Enhanced headers */
+    .dashboard-table {
+        width: 100%;
+        border-collapse: separate;
+        border-spacing: 0;
+        border-radius: 8px;
+        overflow: hidden;
+    }
+    
+    .dashboard-table thead {
+        background: #343a40; /* Darker gray */
+    }
+    
+    .dashboard-table th {
+        padding: 1.1rem;
+        text-align: left;
+        font-weight: 700; /* Bolder */
+        font-size: 1.1rem; /* Larger */
+        color: white;
+        border-right: 1px solid rgba(255, 255, 255, 0.1);
+        letter-spacing: 0.5px; /* Added spacing for readability */
+        background-color: #2f2f2f; /* Darker gray background */
+    }
+    
+    .dashboard-table th:last-child {
+        border-right: none;
+    }
+    
+    /* Darker first column styling */
+    .dashboard-table thead tr th.first-column {
+        background:rgb(42, 47, 53); /* Darker gray for first column */
+    }
+    
+    .dashboard-table tbody tr td.first-column {
+        background: rgba(13, 71, 161, 0.08);
+        border-right: 1px solid rgba(0, 0, 0, 0.05);
+        font-weight: 600;
+    }
+    
+    .dashboard-table td {
+        padding: 0.9rem 1rem;
+        border-bottom: 1px solid #e0f7fa;
+        vertical-align: middle;
+    }
+    
+    .dashboard-table tbody tr {
+        transition: background 0.2s;
+    }
+    
+    .dashboard-table tbody tr:hover {
+        background: rgba(176, 224, 230, 0.1);
+    }
+    
+    .dashboard-table tbody tr:hover td.first-column {
+        background: rgba(13, 71, 161, 0.12);
+    }
+    
+    .appointment-id {
+        color: #0d47a1;
+        font-weight: 600;
+        text-decoration: none;
+        transition: color 0.2s;
+    }
+    
+    .appointment-id:hover {
+        color: #1976d2;
+        text-decoration: underline;
+    }
+    
+    .btn-sm {
+        padding: 0.35rem 0.7rem;
+        font-size: 0.85rem;
+        border-radius: 6px;
+    }
+    
+    .btn-danger {
+        background: #e53935;
+        border: none;
+    }
+    
+    .btn-danger:hover {
+        background: #c62828;
+    }
+    
+    /* No appointments styling */
+    .no-appointments {
+        text-align: center;
+        padding: 2.5rem 1rem;
+    }
+    
+    .no-appointments .icon-container {
+        width: 80px;
+        height: 80px;
+        background: rgba(176, 224, 230, 0.2);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 1.5rem;
+    }
+    
+    .no-appointments .icon-container i {
+        font-size: 2.5rem;
+        color: #1976d2;
+    }
+    
+    .no-appointments h3 {
+        color: #1976d2;
+        margin-bottom: 0.5rem;
+    }
+    
+    .no-appointments p {
+        color: #666;
+        margin-bottom: 1.5rem;
+    }
+    
+    /* Decorative elements */
+    .dashboard-card::before {
+        content: "";
+        position: absolute;
+        top: -15px;
+        right: -15px;
+        width: 70px;
+        height: 70px;
+        background: linear-gradient(135deg, #1976d2, #2196f3);
+        border-radius: 50%;
+        opacity: 0.1;
+        z-index: -1;
+    }
+    
+    .dashboard-card::after {
+        content: "";
+        position: absolute;
+        bottom: 10px;
+        left: 10px;
+        width: 40px;
+        height: 40px;
+        background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24'%3E%3Cpath fill='%231976d2' fill-opacity='0.1' d='M12 2C6.486 2 2 6.486 2 12s4.486 10 10 10s10-4.486 10-10S17.514 2 12 2m-1 14H8v-5h3m1-5v10h-1.5V9H12m5 7h-3v-5h3m0-2h-3V6h3v1.5H17V9h-1.5v.5H17V12h-1.5v.5H17V15h-3v-1.5h1.5v-2H14V9h3V6m-7.5 9H8v-1.5h1.5V15m0-7.5H8V6h1.5v1.5m0 3H8V9h1.5v1.5m0 3H8v-1.5h1.5V12Z'/%3E%3C/svg%3E");
+        opacity: 0.2;
+        z-index: -1;
+    }
+    
+    /* Responsive adjustments */
+    @media (max-width: 992px) {
+        .dashboard-header {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 1rem;
+        }
+        
+        .dashboard-title::after {
+            bottom: -15px;
+        }
+    }
+    
+    @media (max-width: 768px) {
+        .dashboard-container {
+            padding: 1.5rem 1rem;
+        }
+        
+        .dashboard-card {
+            padding: 1.5rem;
+        }
+        
+        .dashboard-table th {
+            padding: 1rem;
+            font-size: 1.05rem;
+        }
+        
+        .dashboard-table td {
+            padding: 0.75rem;
+            font-size: 0.95rem;
+        }
+        
+        .card-header h2 {
+            font-size: 1.3rem;
+        }
+    }
+    
+    @media (max-width: 576px) {
+        .dashboard-header {
+            margin-bottom: 1.5rem;
+        }
+        
+        .dashboard-title {
+            font-size: 1.8rem;
+        }
+        
+        .dashboard-card {
+            padding: 1.25rem;
+        }
+        
+        .table-responsive {
+            overflow-x: auto;
+        }
+        
+        .dashboard-table {
+            min-width: 600px;
+        }
+        
+        .dashboard-table th {
+            font-size: 1rem;
+            padding: 0.9rem;
+        }
+    }
+</style>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Add confirmation for appointment deletion
+        const deleteForms = document.querySelectorAll('.form-delete');
+        deleteForms.forEach(form => {
+            form.addEventListener('submit', function(e) {
+                if (!confirm('{% translate "Are you sure you want to cancel this appointment?" %}')) {
+                    e.preventDefault();
+                }
+            });
+        });
+        
+        // Add hover effects to table rows
+        const tableRows = document.querySelectorAll('.dashboard-table tbody tr');
+        tableRows.forEach(row => {
+            row.addEventListener('mouseenter', function() {
+                this.style.transform = 'translateY(-2px)';
+                this.style.boxShadow = '0 5px 15px rgba(0,0,0,0.05)';
+            });
+            
+            row.addEventListener('mouseleave', function() {
+                this.style.transform = '';
+                this.style.boxShadow = '';
+            });
+
+        });
+    });
+
+    // Toggle appointment confirmation button click handler
+    $('.toggle-confirm-btn').click(function() {
+        var button = $(this);
+        var appointmentId = button.data('appointment-id');
+        $.ajax({
+            url: '/patient/appointment/' + appointmentId + '/toggle-confirmation/',
+            type: 'POST',
+            headers: {
+                'X-CSRFToken': $('[name=csrfmiddlewaretoken]').val()
+            },
+            success: function(response) {
+                if (response.success) {
+                    if (response.is_confirmed) {
+                        button.text('Unconfirm');
+                        button.removeClass('btn-warning').addClass('btn-success');
+                    } else {
+                        button.text('Confirm');
+                        button.removeClass('btn-success').addClass('btn-warning');
+                    }
+                } else {
+                    alert('Failed to update confirmation status.');
+                }
+            },
+            error: function() {
+                alert('Error occurred while updating confirmation status.');
+            }
+        });
+    });
+</script>
+{% endblock content %}

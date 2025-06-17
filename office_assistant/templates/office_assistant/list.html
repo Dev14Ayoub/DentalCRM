@@ -1,0 +1,97 @@
+{% extends 'global/base.html' %}
+{% load i18n %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="d-flex justify-content-center mb-4">
+        <h2 class="prominent-heading">{% trans "Office Assistant Management" %}</h2>
+    </div>
+    
+    <a href="{% url 'office_assistant:assistant_create' %}" class="btn btn-primary mb-3">
+        <i class="bi bi-plus-circle"></i> {% trans "Add New Assistant" %}
+    </a>
+    
+    <div class="card shadow">
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead class="table-light">
+                        <tr>
+                            <th>{% trans "ID" %}</th>
+                            <th>{% trans "Profile Photo" %}</th>
+                            <th>{% trans "Username" %}</th>
+                            <th>{% trans "First Name" %}</th>
+                            <th>{% trans "Last Name" %}</th>
+                            <th>{% trans "Email" %}</th>
+                            <th>{% trans "Phone Number" %}</th>
+                            <th>{% trans "Actions" %}</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for assistant in assistants %}
+                        <tr>
+                            <td><code>{{ assistant.id }}</code></td>
+                            <td>
+                                {% if assistant.profile_photo %}
+                                    <img src="{{ assistant.profile_photo.url }}" alt="{{ assistant.first_name }}" class="rounded-circle" style="width: 50px; height: 50px; object-fit: cover;">
+                                {% else %}
+                                    <span class="text-muted">{% trans "No Photo" %}</span>
+                                {% endif %}
+                            </td>
+                            <td><strong>{{ assistant.username }}</strong></td>
+                            <td>{{ assistant.first_name }}</td>
+                            <td>{{ assistant.last_name }}</td>
+                            <td><strong>{{ assistant.email }}</strong></td>
+                            <td>{{ assistant.phone_number }}</td>
+                            <td>
+                                <div class="btn-group">
+                                    <a href="{% url 'office_assistant:assistant_update' assistant.id %}" 
+                                       class="btn btn-sm btn-outline-primary"
+                                       data-bs-toggle="tooltip" 
+                                       data-bs-placement="top"
+                                       data-bs-title="{% trans 'Edit Assistant' %}">
+                                        <i class="bi bi-pencil"></i>
+                                    </a>
+                                    <a href="{% url 'office_assistant:assistant_delete' assistant.id %}" 
+                                       class="btn btn-sm btn-outline-danger"
+                                       data-bs-toggle="tooltip" 
+                                       data-bs-placement="top"
+                                       data-bs-title="{% trans 'Delete Assistant' %}">
+                                        <i class="bi bi-trash"></i>
+                                    </a>
+                                    <a href="{% url 'office_assistant:assistant_detail' assistant.id %}" 
+                                       class="btn btn-sm btn-outline-info"
+                                       data-bs-toggle="tooltip" 
+                                       data-bs-placement="top"
+                                       data-bs-title="{% trans 'View Details' %}">
+                                        <i class="bi bi-eye"></i>
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="8" class="text-center">{% trans "No assistants found" %}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Tooltip initialization
+    const tooltips = Array.from(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+    tooltips.forEach(t => new bootstrap.Tooltip(t, {
+        placement: 'top',
+        trigger: 'hover',
+        delay: { show: 100, hide: 50 }
+    }));
+});
+</script>
+{% endblock %}

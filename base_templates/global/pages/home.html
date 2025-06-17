@@ -1,0 +1,122 @@
+{% extends 'global/base.html' %}
+{% load static %}
+{% load i18n %}
+
+{% block title %}DentaCore - Premium Dental Care{% endblock title %}
+
+{% block content %}
+<div class="container">
+    <section class="hero-section position-relative overflow-hidden rounded-4 shadow-lg my-5">
+        <i class="fas fa-tooth dental-icon tooth-1"></i>
+        <i class="fas fa-teeth dental-icon tooth-2"></i>
+        <i class="fas fa-teeth-open dental-icon tooth-3"></i>
+        
+        <div class="hero-content position-relative" style="z-index: 2;">
+            <div class="hero-row d-flex flex-wrap align-items-center">
+                <div class="hero-text flex-fill min-w-300 p-3 p-lg-4">
+                    <h1 class="display-3 fw-bold mb-3 text-shadow">Welcome to DentaCore!</h1>
+                    <p class="hero-subtitle mb-4">
+                        We look forward to helping you achieve a healthy, beautiful smile!
+                    </p>
+                    <a href="{% url 'schedule:schedule' %}" class="btn btn-light btn-lg shadow-sm rounded-pill px-4 py-3">
+                        Schedule an appointment right now.
+                    </a>
+                </div>
+                <div class="hero-image flex-fill min-w-300 p-3 p-lg-4 d-flex justify-content-center align-items-center">
+                    <img src="{% get_static_prefix %}global/img/img2.jpg" alt="Dental Care" class="hero-img rounded shadow-lg border border-white border-3 animated-element" style="max-height: 300px;">
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <section class="features-section text-center py-5">
+        <h2 class="section-title">Our Premium Services</h2>
+        <p class="section-subtitle mx-auto mb-5" style="max-width: 700px;">
+            Experience comprehensive dental care with our state-of-the-art facilities and expert professionals
+        </p>
+        
+        <div class="features-grid d-grid gap-4" style="grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));">
+            <div class="feature-card animated-element bg-white rounded-4 p-4 shadow-sm position-relative overflow-hidden">
+                <div class="feature-icon fs-1 text-info mb-3">
+                    <i class="fas fa-tooth"></i>
+                </div>
+                <h3 class="feature-title text-primary mb-3">General Dentistry</h3>
+                <p class="feature-desc text-secondary">
+                    Comprehensive oral health care including exams, cleanings, and preventive treatments to keep your smile healthy.
+                </p>
+            </div>
+            
+            <div class="feature-card animated-element bg-white rounded-4 p-4 shadow-sm position-relative overflow-hidden">
+                <div class="feature-icon fs-1 text-info mb-3">
+                    <i class="fas fa-smile"></i>
+                </div>
+                <h3 class="feature-title text-primary mb-3">Cosmetic Dentistry</h3>
+                <p class="feature-desc text-secondary">
+                    Transform your smile with our cosmetic solutions including teeth whitening, veneers, and smile makeovers.
+                </p>
+            </div>
+            
+            <div class="feature-card animated-element bg-white rounded-4 p-4 shadow-sm position-relative overflow-hidden">
+                <div class="feature-icon fs-1 text-info mb-3">
+                    <i class="fas fa-teeth-open"></i>
+                </div>
+                <h3 class="feature-title text-primary mb-3">Orthodontic Care</h3>
+                <p class="feature-desc text-secondary">
+                    Modern orthodontic solutions including clear aligners and traditional braces for perfectly aligned teeth.
+                </p>
+            </div>
+        </div>
+    </section>
+    
+    <section class="cta-section bg-info text-white py-5 rounded-4 text-center my-5 position-relative overflow-hidden">
+        <div class="cta-content position-relative" style="z-index: 2; max-width: 800px; margin: 0 auto;">
+            <h2 class="cta-title display-5 mb-3" style="font-family: 'Playfair Display', serif;">Ready for Your Perfect Smile?</h2>
+            <p class="cta-text fs-5 mb-4 opacity-75">
+                Join thousands of satisfied patients who have experienced the DentaCore difference. Book your appointment today and take the first step toward optimal dental health.
+            </p>
+            <a href="{% url 'schedule:schedule' %}" class="btn btn-dark btn-lg rounded-pill px-5 py-3 shadow">
+                Schedule Your Appointment
+            </a>
+        </div>
+    </section>
+    
+    <footer class="footer bg-dark text-white py-4 rounded-4 text-center my-5">
+        <div class="footer-logo display-4 mb-3" style="font-family: 'Playfair Display', serif; color: #00bcd4;">DentaCore</div>
+        <p class="footer-text mx-auto mb-3" style="max-width: 600px; opacity: 0.8; line-height: 1.7;">
+            Premium dental care services with a focus on patient comfort and cutting-edge technology. Your smile is our priority.
+        </p>
+        <p class="copyright opacity-75 mb-0">
+            &copy; 2023 DentaCore. All rights reserved.
+        </p>
+    </footer>
+</div>
+
+<style>
+    .text-shadow {
+        text-shadow: 2px 2px 6px rgba(0,0,0,0.3);
+    }
+    .hero-img {
+        max-width: 100%;
+        border-radius: 15px;
+        box-shadow: 0 15px 40px rgba(0, 0, 0, 0.25);
+        border: 5px solid rgba(255, 255, 255, 0.3);
+        animation: floatAnimation 8s ease-in-out infinite;
+        max-height: 300px;
+    }
+    @keyframes floatAnimation {
+        0%, 100% { transform: translateY(0) rotate(0deg); }
+        25% { transform: translateY(-15px) rotate(2deg); }
+        50% { transform: translateY(-10px) rotate(-2deg); }
+        75% { transform: translateY(-5px) rotate(1deg); }
+    }
+    .dental-icon {
+        position: absolute;
+        font-size: 8rem;
+        opacity: 0.08;
+        z-index: 1;
+    }
+    .tooth-1 { top: 20px; right: 10%; animation: floatAnimation 12s ease-in-out infinite; }
+    .tooth-2 { bottom: 40px; left: 8%; animation: floatAnimation 10s ease-in-out infinite reverse; }
+    .tooth-3 { top: 50%; left: 5%; animation: floatAnimation 15s ease-in-out infinite; }
+</style>
+{% endblock content %}

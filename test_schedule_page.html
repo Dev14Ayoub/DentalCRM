@@ -1,0 +1,1187 @@
+
+
+
+<!DOCTYPE html>
+<html lang="">
+
+<head>   
+    
+
+<meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/fontawesome.min.css" integrity="sha512-P9vJUXK+LyvAzj8otTOKzdfF1F3UYVl13+F8Fof8/2QNb8Twd6Vb+VD52I7+87tex9UXxnzPgWA3rH96RExA7A==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/brands.min.css" integrity="sha512-sVSECYdnRMezwuq5uAjKQJEcu2wybeAPjU4VJQ9pCRcCY4pIpIw4YMHIOQ0CypfwHRvdSPbH++dA3O4Hihm/LQ==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/solid.min.css" integrity="sha512-tk4nGrLxft4l30r9ETuejLU0a3d7LwMzj0eXjzc16JQj+5U1IeVoCuGLObRDc3+eQMUcEQY1RIDPGvuA7SNQ2w==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Roboto+Slab:wght@900&display=swap" rel="stylesheet">
+<link rel="stylesheet" type="text/css" href="/static/global/css/styles.css">  
+<link rel="icon" href="/static/global/img/dentacr_lg.png" type="image/x-icon">
+
+<!-- Add these -->
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.2/font/bootstrap-icons.css">
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet"> 
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+    
+    <style>
+        /* ===== ANIMATED BACKGROUND STYLES ===== */
+        :root {
+            --sky-blue-1: #87ceeb;
+            --sky-blue-2: #b0e2ff;
+            --sky-blue-3: #87cefa;
+            --sky-blue-4: #b0e0e6;
+            --nav-primary:rgb(12, 72, 133); /* Darker blue */
+            --nav-secondary: #b19cd9; /* Light purple */
+            --nav-hover: #5aadd8; /* Darker on hover */
+            --logout-hover: #ff6b6b; /* Red for logout hover */
+            --button-hover: rgba(0, 0, 0, 0.15); /* Dark overlay for buttons */
+            --menu-gradient-1: #6bb8e0;
+            --menu-gradient-2: #8cc9e8;
+            --menu-gradient-3: #a8d6ef;
+        }
+        
+        body {
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            position: relative;
+            overflow-x: hidden;
+            background-color: #f8f9fa;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            padding-top: 90px; /* Space for sticky navbar */
+        }
+        
+        .animated-background {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -2;
+            background: linear-gradient(270deg, 
+                var(--sky-blue-1), 
+                var(--sky-blue-2), 
+                var(--sky-blue-3), 
+                var(--sky-blue-4));
+            background-size: 400% 400%;
+            animation: GradientWave 15s ease infinite;
+        }
+        
+        @keyframes GradientWave {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        
+        /* ===== DARKER SKY BLUE NAVBAR ===== */
+        .main-header-container {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 1000;
+            background: linear-gradient(135deg, var(--nav-primary), var(--nav-secondary));
+            border-radius: 50px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            padding: 0.5rem 1.5rem;
+            width: 90%;
+            max-width: 1200px;
+            margin: 0 auto;
+            backdrop-filter: blur(5px);
+            -webkit-backdrop-filter: blur(5px);
+            border: 2px solid rgba(255, 255, 255, 0.5);
+            transition: all 0.3s ease;
+        }
+        @media (max-width: 768px) {
+            .main-header-container {
+                left: 0 !important;
+                transform: none !important;
+                width: 100% !important;
+                padding-left: 1rem !important;
+                padding-right: 1rem !important;
+                margin: 0 !important;
+            }
+        }
+        
+        /* Navbar hover effect - darkens when cursor is over navbar */
+        .main-header-container:hover {
+            background: linear-gradient(135deg, 
+                var(--nav-hover), 
+                #7abde0); /* Darker shade */
+        }
+        
+        /* Navbar scroll effect */
+        .main-header-container.scrolled {
+            top: 10px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.15);
+            padding: 0.4rem 1.2rem;
+        }
+        
+        .main-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .logo-container {
+            flex: 0 0 auto;
+            border-radius: 20px !important;
+            padding: 3px 8px !important;
+            display: inline-block !important;
+            background: linear-gradient(135deg, rgba(224, 240, 255, 0.7), rgba(255, 255, 255, 0.9)) !important; /* shiny gradient background */
+            box-shadow: 0 0 8px 3px rgba(224, 240, 255, 0.8) !important; /* subtle glow */
+            transition: box-shadow 0.3s ease;
+        }
+        .logo-container:hover {
+            box-shadow: 0 0 20px 10px rgba(177, 156, 217, 0.9) !important; /* stronger purple glow on hover */
+        }
+        .logo-container .navbar-brand img {
+            max-height: 40px !important;
+            height: auto !important;
+            display: block !important;
+        }
+        /* Small screen logo circular */
+        @media (max-width: 768px) {
+            .logo-container picture source {
+                display: none;
+            }
+            .logo-container picture img {
+                border-radius: 0 !important;
+                max-height: 40px !important;
+                width: auto !important;
+                object-fit: contain !important;
+            }
+        }
+        
+        .header-right-section {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        @media (max-width: 768px) {
+            .navbar-buttons {
+                display: none !important;
+            }
+            .menu-toggle {
+                display: flex !important;
+            }
+            .main-header {
+                display: flex !important;
+                justify-content: space-between !important;
+                align-items: center !important;
+                flex-wrap: nowrap !important;
+            }
+            .logo-container {
+                max-width: 120px !important;
+                padding: 3px 8px !important;
+                flex-shrink: 0 !important;
+                order: 0 !important;
+            }
+            .logo-container .navbar-brand img {
+                max-height: 30px !important;
+            }
+            .navbar-buttons {
+                order: 1 !important;
+            }
+        }
+        
+        /* ===== ENHANCED BUTTON STYLES WITH DARKER HOVER ===== */
+        .plaintext-button {
+            background: none;
+            border: none;
+            padding: 0;
+            margin: 0;
+            cursor: pointer;
+        }
+        
+        .plaintext-button a {
+            display: inline-block;
+            padding: 0.8rem 1.6rem;
+            border-radius: 30px;
+            text-decoration: none;
+            font-weight: 700;
+            font-size: 1.1rem;
+            transition: all 0.3s ease;
+            color: white;
+            background: rgba(255, 255, 255, 0.15);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            position: relative;
+            overflow: hidden;
+            z-index: 1;
+            text-shadow: 0 1px 2px rgba(0,0,0,0.2);
+        }
+        
+        .plaintext-button a:hover {
+            background: var(--button-hover) !important; /* Dark overlay on hover */
+            transform: translateY(-3px);
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
+        }
+        
+        /* Active button style */
+        .plaintext-button a.active {
+            background: rgba(255, 255, 255, 0.25);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.25);
+        }
+        
+        /* Special style for logout button */
+        .logout-button a {
+            background: rgba(255, 255, 255, 0.15);
+            border-color: rgba(255, 255, 255, 0.3);
+        }
+        
+        .logout-button a:hover {
+            background: var(--logout-hover) !important; /* Red on hover */
+            border-color: rgba(255, 255, 255, 0.5);
+        }
+        
+        /* ===== CONTENT CONTAINER STYLES ===== */
+        .body-container {
+            position: relative;
+            z-index: 1;
+            padding-top: 20px;
+        }
+        
+        .main-content-container {
+            background-color: rgba(255, 255, 255, 0.92);
+            border-radius: 16px;
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.08);
+            padding: 2.5rem;
+            margin: 2rem auto;
+            max-width: 1200px;
+            position: relative;
+            backdrop-filter: blur(6px);
+            -webkit-backdrop-filter: blur(6px);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+        }
+        
+        /* ===== RESPONSIVE ADJUSTMENTS ===== */
+        @media (max-width: 1200px) {
+            .main-header-container {
+                width: 95%;
+            }
+        }
+        
+        @media (max-width: 992px) {
+            body {
+                padding-top: 140px; /* More space for stacked navbar */
+            }
+            
+            .main-header {
+                flex-direction: column;
+                padding: 0;
+            }
+            
+            .header-right-section {
+                width: 100%;
+                justify-content: center;
+                margin-top: 1rem;
+                gap: 0.6rem;
+            }
+            
+            .plaintext-button a {
+                padding: 0.7rem 1.4rem;
+                font-size: 1.05rem;
+            }
+            
+            .main-content-container {
+                padding: 1.5rem;
+                margin: 1.5rem;
+                margin-top: 1rem;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            body {
+                padding-top: 160px; /* Adjust for mobile */
+            }
+            
+            .main-header-container {
+                border-radius: 30px;
+                padding: 0.5rem 1rem;
+                width: 97%;
+            }
+            
+            .header-right-section {
+                gap: 0.4rem;
+            }
+            
+            .plaintext-button a {
+                padding: 0.6rem 1.1rem;
+                font-size: 1rem;
+            }
+            
+            .main-content-container {
+                padding: 1.2rem;
+                margin: 1rem;
+                border-radius: 12px;
+                margin-top: 0.5rem;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            body {
+                padding-top: 200px; /* More space for wrapped buttons */
+            }
+            
+            .header-right-section {
+                gap: 0.3rem;
+            }
+            
+            .plaintext-button a {
+                padding: 0.5rem 0.9rem;
+                font-size: 0.95rem;
+            }
+            
+            .main-header-container {
+                top: 10px;
+            }
+        }
+    </style>
+    <style>
+        /* ===== IMPROVED NAVBAR STYLES ===== */
+        .navbar-custom {
+            background: linear-gradient(135deg, #6bb8e0, #8cc9e8);
+            border-radius: 50px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            padding: 0.5rem 1.5rem;
+            transition: background 0.3s ease;
+        }
+        .navbar-custom:hover {
+            background: linear-gradient(135deg, #5aadd8, #7abde0);
+        }
+        
+        /* Enhanced button styles */
+        .nav-button {
+            display: inline-flex;
+            align-items: center;
+            padding: 0.6rem 1.2rem;
+            border-radius: 30px;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            color: white;
+            background: rgba(255, 255, 255, 0.15);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            margin: 0 0.3rem;
+        }
+        
+        .nav-button:hover {
+            background: rgba(0, 0, 0, 0.15);
+            transform: translateY(-3px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+            color: white;
+        }
+        
+        .nav-button i {
+            margin-right: 0.5rem;
+            font-size: 1.1em;
+        }
+        
+        /* Special logout button */
+        .logout-button {
+            background: rgba(255, 255, 255, 0.15);
+        }
+        
+        .logout-button:hover {
+            background: #ff6b6b !important;
+        }
+        
+        /* Menu toggle button */
+        .menu-toggle {
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(255, 255, 255, 0.15);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            color: white;
+            transition: all 0.3s ease;
+        }
+        
+        .menu-toggle:hover {
+            background: rgba(0, 0, 0, 0.15);
+            transform: scale(1.05);
+        }
+        
+        /* ===== DECORATIVE MENU STYLES ===== */
+        .offcanvas {
+            background: linear-gradient(135deg, 
+                rgba(107, 184, 224, 0.95), 
+                rgba(140, 201, 232, 0.95),
+                rgba(168, 214, 239, 0.95));
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border-left: 1px solid rgba(255, 255, 255, 0.5);
+            box-shadow: -5px 0 25px rgba(0, 0, 0, 0.1);
+        }
+        
+        .offcanvas-header {
+            background: linear-gradient(135deg, var(--menu-gradient-1), var(--menu-gradient-2));
+            border-bottom: 1px solid rgba(255, 255, 255, 0.3);
+            padding: 1.5rem 1.5rem;
+        }
+        
+        .offcanvas-title {
+            font-weight: 700;
+            color: white;
+            font-size: 1.5rem;
+            text-shadow: 0 1px 2px rgba(0,0,0,0.2);
+        }
+        
+        .btn-close {
+            background: transparent url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='%23fff'%3e%3cpath d='M.293.293a1 1 0 0 1 1.414 0L8 6.586 14.293.293a1 1 0 1 1 1.414 1.414L9.414 8l6.293 6.293a1 1 0 0 1-1.414 1.414L8 9.414l-6.293 6.293a1 1 0 0 1-1.414-1.414L6.586 8 .293 1.707a1 1 0 0 1 0-1.414z'/%3e%3c/svg%3e") center/1em auto no-repeat;
+            opacity: 0.8;
+            transition: all 0.2s ease;
+        }
+        
+        .btn-close:hover {
+            opacity: 1;
+            transform: rotate(90deg);
+        }
+        
+        .offcanvas-body {
+            padding: 1.5rem;
+        }
+        
+        .offcanvas-body .nav-link {
+            padding: 0.9rem 1.5rem;
+            border-radius: 10px;
+            margin-bottom: 0.5rem;
+            transition: all 0.3s ease;
+            color: white;
+            font-weight: 500;
+            background: rgba(255, 255, 255, 0.15);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            display: flex;
+            align-items: center;
+            position: relative;
+            overflow: hidden;
+            font-size: 1.1rem;
+        }
+        
+        .offcanvas-body .nav-link:before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 5px;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateX(-100%);
+            transition: transform 0.3s ease;
+        }
+        
+        .offcanvas-body .nav-link:hover {
+            background: rgba(255, 255, 255, 0.25);
+            transform: translateX(5px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .offcanvas-body .nav-link:hover:before {
+            transform: translateX(0);
+        }
+        
+        .offcanvas-body .nav-link.active {
+            background: rgba(255, 255, 255, 0.3);
+            font-weight: 600;
+        }
+        
+        .offcanvas-body .nav-link i {
+            margin-right: 1rem;
+            font-size: 1.3rem;
+            width: 24px;
+            text-align: center;
+            color: white;
+        }
+        
+        .divider {
+            height: 1px;
+            background: linear-gradient(to right, transparent, rgba(255, 255, 255, 0.5), transparent);
+            margin: 1.5rem 0;
+        }
+        
+        .user-info-section {
+            padding: 1.5rem;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 12px;
+            margin-bottom: 1.5rem;
+            text-align: center;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+        
+        .user-avatar {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #5aadd8, #7abde0);
+            margin: 0 auto 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.5rem;
+            color: white;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            border: 3px solid rgba(255, 255, 255, 0.5);
+        }
+        
+        .user-name {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: white;
+            margin-bottom: 0.3rem;
+        }
+        
+        .user-role {
+            font-size: 0.95rem;
+            color: rgba(255, 255, 255, 0.85);
+            background: rgba(0, 0, 0, 0.15);
+            display: inline-block;
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+        }
+        
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .navbar-buttons {
+                flex-wrap: wrap;
+                justify-content: center !important;
+                margin-top: 1rem;
+            }
+            
+            .nav-button {
+                margin: 0.2rem;
+                padding: 0.5rem 1rem;
+                font-size: 0.9rem;
+            }
+            
+            .menu-toggle {
+                width: 38px;
+                height: 38px;
+            }
+            
+            .offcanvas-header {
+                padding: 1rem 1.25rem;
+            }
+            
+            .offcanvas-body {
+                padding: 1rem;
+            }
+            
+            .offcanvas-body .nav-link {
+                padding: 0.8rem 1.2rem;
+                font-size: 1rem;
+            }
+        }
+    </style>
+    
+    <title>Schedule</title>
+</head>
+
+<body>
+    <!-- ===== ANIMATED GRADIENT BACKGROUND ===== -->
+    <div class="animated-background"></div>
+    
+    <!-- ===== NAVBAR WITH RIGHT-ALIGNED BUTTONS ===== -->
+    <header class="main-header-container navbar-custom" id="mainHeader">
+        <div class="main-header navbar-container d-flex align-items-center justify-content-between w-100">
+            <!-- Logo on left -->
+            <div class="logo-container">
+            <a class="navbar-brand" href="/">
+                <img src="/static/global/img/dc_nb.png?v=2" alt="Logo" style="max-height: 40px;">
+            </a>
+            </div>
+            
+            <!-- Buttons and menu on right -->
+            <div class="header-right-section">
+                <!-- Navigation buttons -->
+                <div class="navbar-buttons d-flex align-items-center">
+                    
+                    <a href="/patients/" class="nav-button me-2">
+                        <i class="bi bi-people-fill"></i> Patients
+                    </a>
+                    
+                    <a href="/leads/" class="nav-button me-2">
+                        <i class="bi bi-person-lines-fill"></i> Leads
+                    </a>
+                    
+	                    <a href="/doctors/" class="nav-button">
+	                        <i class="bi bi-person-heart" style="font-size: 1.5em; color: white;"></i> Doctors
+	                    </a>
+
+	                    <a href="/office_assistant/assistants/" class="nav-button">
+	                        <i class="bi bi-person-badge"></i> Assistants
+	                    </a>
+                    
+                    
+                </div>
+                
+                <!-- Menu toggle button -->
+                <button class="menu-toggle" type="button" data-bs-toggle="offcanvas" data-bs-target="#sidebarMenu" aria-controls="sidebarMenu">
+                    <i class="bi bi-list" style="font-size: 1.3rem;"></i>
+                </button>
+            </div>
+        </div>
+    </header>
+    
+    <!-- ===== DECORATIVE SIDEBAR MENU ===== -->
+    <div class="offcanvas offcanvas-end" tabindex="-1" id="sidebarMenu" aria-labelledby="sidebarMenuLabel">
+        <div class="offcanvas-header">
+            <h5 class="offcanvas-title" id="sidebarMenuLabel">
+                <i class="bi bi-menu-app me-2"></i> MediCare Menu
+            </h5>
+            <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+        </div>
+        <div class="offcanvas-body">
+            <!-- User info section -->
+            <a href="/users/dashboard/" class="user-info-section text-decoration-none text-white d-block">
+                <div class="user-avatar">
+                    
+                        <i class="bi bi-person-circle"></i>
+                    
+                </div>
+                <div class="user-name">
+                    
+                        testuser2
+                    
+                </div>
+                <div class="user-role">
+                    
+                        Administrator
+                    
+                </div>
+            </a>
+            
+            <!-- Navigation links -->
+            <ul class="nav flex-column">
+                <li class="nav-item">
+                    <a class="nav-link" href="/services/">
+                        <i class="bi bi-gear-fill"></i> Services
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/schedule/">
+                        <i class="bi bi-calendar-check"></i> Schedule
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/about/">
+                        <i class="bi bi-info-circle"></i> About
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/patients/">
+                        <i class="bi bi-people-fill"></i> Patients
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/leads/">
+                        <i class="bi bi-person-lines-fill"></i> Leads
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/doctors/">
+                        <i class="bi bi-person-heart"></i> Doctors
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/office_assistant/assistants/">
+                        <i class="bi bi-person-badge"></i> Assistants
+                    </a>
+                </li>
+                <li class="divider my-2"></li>
+                
+                
+                    <li class="nav-item">
+                        <a class="nav-link" href="/users/dashboard/">
+                            <i class="bi bi-speedometer2"></i> Dashboard
+                        </a>
+                    </li>
+                    <li class="divider my-2"></li>
+                    <li class="nav-item">
+                        <form action="/users/logout/" method="POST" class="w-100">
+                            <input type="hidden" name="csrfmiddlewaretoken" value="7VfIVDjE6T14xcOQRrQZTN5UWakepMgoYqdgtUAxjnKUc1sfrj9HGHUWAVsYjbKU">
+                            <input type="hidden" name="username" value="testuser2">
+                            <button type="submit" class="nav-link text-start w-100 border-0 bg-transparent p-0">
+                                <i class="bi bi-box-arrow-right"></i> Logout
+                            </button>
+                        </form>
+                    </li>
+                
+            </ul>
+            
+            <!-- Menu footer -->
+            <div class="mt-4 text-center">
+                <div class="text-white-50 mb-2">MediCare v2.0</div>
+                <div class="d-flex justify-content-center gap-3">
+                    <a href="#" class="text-white fs-5"><i class="bi bi-facebook"></i></a>
+                    <a href="#" class="text-white fs-5"><i class="bi bi-twitter"></i></a>
+                    <a href="#" class="text-white fs-5"><i class="bi bi-linkedin"></i></a>
+                    <a href="#" class="text-white fs-5"><i class="bi bi-instagram"></i></a>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="body-container">
+        <main class="main-content-container">
+            
+    <div class="container my-5 position-relative overflow-hidden rounded-4 shadow-lg bg-light p-4" style="padding-top: 8rem;">
+        <div class="decorative-shape position-absolute top-0 start-0 w-100 h-100" aria-hidden="true"></div>
+        <h2 class="mb-4 decorative-title special-subtitle text-center mx-auto w-75" style="font-size: 3.5rem; padding: 1rem 3rem; margin-bottom: 3rem;">
+            Appointment Scheduler
+        </h2>
+        
+            <div class="row align-items-center">
+                <div class="col-lg-6 mb-4 mb-lg-0">
+                    <div class="card shadow rounded-4 p-4">
+                        
+
+<form class="main-form p-4 rounded-4 shadow-lg" action="" method="POST" enctype="multipart/form-data" style="background: linear-gradient(135deg, #dbe9ff, #f7fbff);">
+    <input type="hidden" name="csrfmiddlewaretoken" value="7VfIVDjE6T14xcOQRrQZTN5UWakepMgoYqdgtUAxjnKUc1sfrj9HGHUWAVsYjbKU">
+    <div class="form-content d-flex flex-row flex-wrap align-items-center justify-content-start">
+        
+            <div class="form-group d-flex flex-column me-3 mb-4" style="min-width: 200px;">
+                <label for="id_first_name" class="form-label fw-bold text-primary mb-2">
+                    First Name
+                </label>
+                <input type="text" name="first_name" placeholder="First Name" maxlength="150" class="form-control border-0 shadow-sm rounded-pill px-3 py-2 bg-white text-dark" required id="id_first_name">
+                
+                
+            </div>
+        
+            <div class="form-group d-flex flex-column me-3 mb-4" style="min-width: 200px;">
+                <label for="id_last_name" class="form-label fw-bold text-primary mb-2">
+                    Last Name
+                </label>
+                <input type="text" name="last_name" placeholder="Last Name" maxlength="150" class="form-control border-0 shadow-sm rounded-pill px-3 py-2 bg-white text-dark" required id="id_last_name">
+                
+                
+            </div>
+        
+            <div class="form-group d-flex flex-column me-3 mb-4" style="min-width: 200px;">
+                <label for="id_doctor" class="form-label fw-bold text-primary mb-2">
+                    Doctor
+                </label>
+                <select name="doctor" class="form-control border-0 shadow-sm rounded-pill px-3 py-2 bg-white text-dark" id="id_doctor">
+  <option value="" selected>---------</option>
+
+  <option value="1">Dr. Smith</option>
+
+</select>
+                
+                
+            </div>
+        
+            <div class="form-group d-flex flex-column me-3 mb-4" style="min-width: 200px;">
+                <label for="procedure" class="form-label fw-bold text-primary mb-2">
+                    Procedure
+                </label>
+                <select name="procedure" id="procedure" class="form-control border-0 shadow-sm rounded-pill px-3 py-2 bg-white text-dark">
+  <option value="1" selected>Procedure One</option>
+
+</select>
+                
+                
+            </div>
+        
+            <div class="form-group d-flex flex-column me-3 mb-4" style="min-width: 200px;">
+                <label for="price" class="form-label fw-bold text-primary mb-2">
+                    Price
+                </label>
+                <input type="text" name="price" value="R$ 100,00" readonly id="price" class="form-control border-0 shadow-sm rounded-pill px-3 py-2 bg-white text-dark">
+                
+                
+            </div>
+        
+            <div class="form-group d-flex flex-column me-3 mb-4" style="min-width: 200px;">
+                <label for="id_date" class="form-label fw-bold text-primary mb-2">
+                    Date
+                </label>
+                <select name="date" class="form-control border-0 shadow-sm rounded-pill px-3 py-2 bg-white text-dark" id="id_date">
+  <option value="2025-06-18">18-06-2025</option>
+
+  <option value="2025-06-19">19-06-2025</option>
+
+  <option value="2025-06-20">20-06-2025</option>
+
+  <option value="2025-06-21">21-06-2025</option>
+
+  <option value="2025-06-23">23-06-2025</option>
+
+  <option value="2025-06-24">24-06-2025</option>
+
+  <option value="2025-06-25">25-06-2025</option>
+
+  <option value="2025-06-26">26-06-2025</option>
+
+  <option value="2025-06-27">27-06-2025</option>
+
+  <option value="2025-06-28">28-06-2025</option>
+
+  <option value="2025-06-30">30-06-2025</option>
+
+  <option value="2025-07-01">01-07-2025</option>
+
+  <option value="2025-07-02">02-07-2025</option>
+
+  <option value="2025-07-03">03-07-2025</option>
+
+  <option value="2025-07-04">04-07-2025</option>
+
+  <option value="2025-07-05">05-07-2025</option>
+
+  <option value="2025-07-07">07-07-2025</option>
+
+  <option value="2025-07-08">08-07-2025</option>
+
+  <option value="2025-07-09">09-07-2025</option>
+
+  <option value="2025-07-10">10-07-2025</option>
+
+  <option value="2025-07-11">11-07-2025</option>
+
+  <option value="2025-07-12">12-07-2025</option>
+
+  <option value="2025-07-14">14-07-2025</option>
+
+  <option value="2025-07-15">15-07-2025</option>
+
+  <option value="2025-07-16">16-07-2025</option>
+
+  <option value="2025-07-17">17-07-2025</option>
+
+  <option value="2025-07-18">18-07-2025</option>
+
+  <option value="2025-07-19">19-07-2025</option>
+
+  <option value="2025-07-21">21-07-2025</option>
+
+  <option value="2025-07-22">22-07-2025</option>
+
+  <option value="2025-07-23">23-07-2025</option>
+
+  <option value="2025-07-24">24-07-2025</option>
+
+  <option value="2025-07-25">25-07-2025</option>
+
+  <option value="2025-07-26">26-07-2025</option>
+
+  <option value="2025-07-28">28-07-2025</option>
+
+  <option value="2025-07-29">29-07-2025</option>
+
+  <option value="2025-07-30">30-07-2025</option>
+
+  <option value="2025-07-31">31-07-2025</option>
+
+  <option value="2025-08-01">01-08-2025</option>
+
+  <option value="2025-08-02">02-08-2025</option>
+
+  <option value="2025-08-04">04-08-2025</option>
+
+  <option value="2025-08-05">05-08-2025</option>
+
+  <option value="2025-08-06">06-08-2025</option>
+
+  <option value="2025-08-07">07-08-2025</option>
+
+  <option value="2025-08-08">08-08-2025</option>
+
+  <option value="2025-08-09">09-08-2025</option>
+
+  <option value="2025-08-11">11-08-2025</option>
+
+  <option value="2025-08-12">12-08-2025</option>
+
+  <option value="2025-08-13">13-08-2025</option>
+
+  <option value="2025-08-14">14-08-2025</option>
+
+  <option value="2025-08-15">15-08-2025</option>
+
+  <option value="2025-08-16">16-08-2025</option>
+
+</select>
+                
+                
+            </div>
+        
+            <div class="form-group d-flex flex-column me-3 mb-4" style="min-width: 200px;">
+                <label for="id_time" class="form-label fw-bold text-primary mb-2">
+                    Time
+                </label>
+                <select name="time" class="form-control border-0 shadow-sm rounded-pill px-3 py-2 bg-white text-dark" id="id_time">
+  <option value="08:00">08:00</option>
+
+  <option value="09:00">09:00</option>
+
+  <option value="10:00">10:00</option>
+
+  <option value="11:00">11:00</option>
+
+  <option value="12:00">12:00</option>
+
+  <option value="13:00">13:00</option>
+
+  <option value="14:00">14:00</option>
+
+  <option value="15:00">15:00</option>
+
+  <option value="16:00">16:00</option>
+
+  <option value="17:00">17:00</option>
+
+</select>
+                
+                
+            </div>
+        
+    </div>
+    
+    <div class="form-content d-flex flex-row justify-content-start mt-4">
+        
+        <div class="form-buttons form-group">
+            <button type="submit" class="btn btn-primary rounded-pill px-5 py-3 shadow fw-bold text-white" style="background: linear-gradient(45deg, #6ea8fe, #a3c1ff); border: none; transition: all 0.3s ease;">
+                
+                    Register
+                
+            </button>
+        </div>
+    </div>
+</form>
+
+<style>
+    .btn-primary:hover {
+        background: linear-gradient(45deg, #4a7be0, #6a9fff) !important;
+    }
+</style>
+
+                    </div>
+                    <div class="mt-4">
+                        <h5 class="decorative-subtitle special-subtitle text-center mx-auto w-75">Don't see the procedure you're looking for?</h5>
+                        <a href="/schedule/custom/" class="btn btn-outline-primary mt-2 decorative-btn d-block mx-auto">
+                            Schedule a custom appointment
+                        </a>
+                    </div>
+
+                    
+                        <div class="mt-5">
+                            <h3>Your Appointments</h3>
+                            <table class="table table-striped">
+                                <thead>
+                                    <tr>
+                                        <th>Date</th>
+                                        <th>Time</th>
+                                        <th>Procedure</th>
+                                        <th>Status</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    
+                                        <tr>
+                                            <td>Jan. 1, 2025</td>
+                                            <td>10 a.m.</td>
+                                            <td>Procedure One</td>
+                                            <td>
+                                                
+                                                    <span class="badge bg-warning">Pending</span>
+                                                
+                                            </td>
+                                            <td>
+                                                
+                                                    <form method="post" action="/schedule/mark_done/1/">
+                                                        <input type="hidden" name="csrfmiddlewaretoken" value="7VfIVDjE6T14xcOQRrQZTN5UWakepMgoYqdgtUAxjnKUc1sfrj9HGHUWAVsYjbKU">
+                                                        <button type="submit" class="btn btn-sm btn-primary">Mark as Done</button>
+                                                    </form>
+                                                
+                                            </td>
+                                        </tr>
+                                    
+                                </tbody>
+                            </table>
+                        </div>
+                    
+
+                </div>
+                <div class="col-lg-6 text-center">
+                    <img src="/static/global/img/img1.jpg" alt="Dental Care" class="img-fluid rounded shadow animated-float" style="max-height: 350px;">
+                </div>
+            </div>
+        
+    </div>
+
+    <style>
+        .animated-float {
+            animation: floatAnimation 6s ease-in-out infinite;
+        }
+        @keyframes floatAnimation {
+            0%, 100% {
+                transform: translateY(0);
+            }
+            50% {
+                transform: translateY(-15px);
+            }
+        }
+        .decorative-shape {
+            background: radial-gradient(circle at top left, rgba(13, 110, 253, 0.15), transparent 70%);
+            pointer-events: none;
+            z-index: 1;
+            position: absolute;
+            border-radius: 1rem;
+            box-shadow: 0 0 30px rgba(13, 110, 253, 0.3);
+            filter: blur(15px);
+        }
+        .decorative-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 2.75rem;
+            color: #0d6efd;
+            text-shadow: 1px 1px 4px rgba(0,0,0,0.15);
+            margin-bottom: 1.75rem;
+            letter-spacing: 1.5px;
+        }
+        .decorative-subtitle {
+            font-weight: 700;
+            color: #0b5ed7;
+            margin-bottom: 1rem;
+            letter-spacing: 1px;
+        }
+        .decorative-btn {
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 20px rgba(13, 110, 253, 0.35);
+            font-weight: 600;
+            border-radius: 50px;
+            padding: 0.6rem 1.8rem;
+            font-size: 1.1rem;
+        }
+        .decorative-btn:hover {
+            background-color: #0a53be !important;
+            color: white !important;
+            box-shadow: 0 8px 30px rgba(13, 110, 253, 0.6);
+            transform: translateY(-4px);
+        }
+        .card {
+            border-radius: 1rem;
+            box-shadow: 0 12px 40px rgba(13, 110, 253, 0.2);
+            padding: 2rem;
+            background: linear-gradient(135deg, #e9f0ff, #ffffff);
+            transition: box-shadow 0.3s ease;
+        }
+        .card:hover {
+            box-shadow: 0 20px 60px rgba(13, 110, 253, 0.35);
+        }
+        h2.decorative-title {
+            font-weight: 900;
+        }
+    </style>
+
+    <style>
+        .special-subtitle {
+            background: linear-gradient(135deg, #6a11cb, #2575fc);
+            color: white !important;
+            padding: 0.75rem 1.5rem;
+            border-radius: 50px;
+            font-weight: 700;
+            font-size: 1.25rem;
+            box-shadow: 0 8px 20px rgba(106, 17, 203, 0.5);
+            position: relative;
+            top: -20px;
+            text-align: center;
+            margin-bottom: 1rem !important;
+        }
+    </style>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Map procedure values to prices - replace with actual values
+            const procedurePrices = {
+                'procedure1': '100',
+                'procedure2': '200',
+                'procedure3': '300'
+            };
+
+            const procedureField = document.querySelector('select[name$="procedure"], select[id$="procedure"]');
+            const priceField = document.querySelector('input[name$="price"], input[id$="price"]');
+
+            if (procedureField && priceField) {
+                procedureField.addEventListener('change', function() {
+                    const selectedProcedure = procedureField.value;
+                    if (procedurePrices.hasOwnProperty(selectedProcedure)) {
+                        priceField.value = procedurePrices[selectedProcedure];
+                    } else {
+                        priceField.value = '';
+                    }
+                });
+            }
+        });
+    </script>
+
+        </main>
+        
+        
+
+        <!-- Bootstrap JS Bundle -->
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+        
+        <!-- Other scripts -->
+        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+        <script src="/static/global/js/form_script.js"></script>
+        <script src="/static/global/js/jquery_script.js"></script>
+        <script src="/static/global/js/price_script.js"></script>
+        <script>
+            var clearSessionUrl = "/users/clear/";
+            var csrfToken = "7VfIVDjE6T14xcOQRrQZTN5UWakepMgoYqdgtUAxjnKUc1sfrj9HGHUWAVsYjbKU";
+            
+            // Add active class to current page button
+            document.addEventListener('DOMContentLoaded', function() {
+                const currentPath = window.location.pathname;
+                const navButtons = document.querySelectorAll('.nav-button');
+                const sidebarLinks = document.querySelectorAll('.offcanvas-body .nav-link');
+                
+                // Highlight navbar buttons
+                navButtons.forEach(button => {
+                    if (button.getAttribute('href') === currentPath) {
+                        button.classList.add('active');
+                    }
+                });
+                
+                // Highlight sidebar links
+                sidebarLinks.forEach(link => {
+                    if (link.getAttribute('href') === currentPath) {
+                        link.classList.add('active');
+                    }
+                });
+                
+                // Navbar scroll effect
+                const navbar = document.getElementById('mainHeader');
+                window.addEventListener('scroll', function() {
+                    if (window.scrollY > 50) {
+                        navbar.classList.add('scrolled');
+                    } else {
+                        navbar.classList.remove('scrolled');
+                    }
+                });
+                
+                // Menu animation on show
+                const menuToggle = document.querySelector('.menu-toggle');
+                const sidebarMenu = document.getElementById('sidebarMenu');
+                
+                menuToggle.addEventListener('click', function() {
+                    this.querySelector('i').classList.toggle('bi-list');
+                    this.querySelector('i').classList.toggle('bi-x');
+                });
+            });
+        </script>
+        
+        
+    </div>
+</body>
+</html>

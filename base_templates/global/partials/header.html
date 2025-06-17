@@ -1,0 +1,221 @@
+{% load i18n %}
+{% load static %}
+<style>
+    /* Navbar gradient background and hover */
+    .navbar-custom {
+        background: linear-gradient(135deg, #004080, #b19cd9);
+        border-radius: 50px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        padding: 0.5rem 1.5rem;
+    }
+    .navbar-custom:hover {
+        background: linear-gradient(135deg, #5aadd8, #7abde0);
+    }
+    /* Navbar container */
+    .navbar-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        width: 90%;
+    }
+    /* Logo styles */
+    .logo-container {
+        background-color: white !important;
+        border-radius: 20px !important;
+        padding: 5px 10px !important;
+        border: 2px solid #004080 !important;
+        display: inline-block !important;
+        transition: border-color 0.3s ease, box-shadow 0.3s ease;
+    }
+    .logo-container:hover {
+        border-color: #b19cd9 !important;
+        box-shadow: 0 0 10px #b19cd9 !important;
+    }
+    .logo-container .navbar-brand img {
+        max-height: 50px !important;
+        height: auto !important;
+        display: block !important;
+    }
+    /* Flexible buttons container */
+    .navbar-buttons {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.8rem;
+        align-items: center;
+    }
+    /* Dropdown menu button */
+    .navbar-dropdown {
+        position: relative;
+    }
+    .dropdown-toggle {
+        background: rgba(255, 255, 255, 0.15);
+        border: 2px solid rgba(255, 255, 255, 0.3);
+        border-radius: 30px;
+        color: white;
+        font-weight: 700;
+        padding: 0.6rem 1.2rem;
+        cursor: pointer;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        transition: all 0.3s ease;
+    }
+    .dropdown-toggle:hover {
+        background: rgba(0, 0, 0, 0.15);
+        box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
+    }
+    .dropdown-menu {
+        position: absolute;
+        top: 100%;
+        right: 0;
+        background: white;
+        border-radius: 8px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        padding: 0.5rem 0;
+        display: none;
+        min-width: 180px;
+        z-index: 1050;
+    }
+    .dropdown-menu.show {
+        display: block;
+    }
+    .dropdown-item {
+        padding: 0.5rem 1.5rem;
+        color: #333;
+        text-decoration: none;
+        display: block;
+        font-weight: 600;
+    }
+    .dropdown-item:hover {
+        background-color: #f0f0f0;
+        color: #000;
+    }
+    /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .navbar-container {
+                width: 100% !important;
+                margin: 0 !important;
+            }
+            .navbar-buttons {
+                flex-direction: row;
+                gap: 0.5rem;
+                justify-content: flex-start;
+                flex-wrap: nowrap;
+                width: auto !important;
+                order: 1 !important;
+            }
+            .navbar-dropdown {
+                width: auto;
+            }
+            .dropdown-menu {
+                position: static;
+                box-shadow: none;
+                border-radius: 0;
+                padding: 0;
+                display: none;
+            }
+            .dropdown-menu.show {
+                display: block;
+            }
+            .main-header {
+                display: flex !important;
+                justify-content: space-between !important;
+                align-items: center !important;
+                flex-wrap: nowrap !important;
+                width: 100% !important;
+            }
+            .logo-container {
+                max-width: 120px !important;
+                padding: 3px 8px !important;
+                flex-shrink: 0 !important;
+                order: 0 !important;
+            }
+            .logo-container .navbar-brand img {
+                max-height: 30px !important;
+            }
+        }
+</style>
+
+<header class="main-header-container navbar-custom" id="mainHeader">
+    <div class="main-header navbar-container d-flex justify-content-between align-items-center">
+        <div class="logo-container">
+            <a class="navbar-brand" href="{% url 'base:home' %}">
+                <img src="{% get_static_prefix %}global/img/dc_nb.png?v=2" alt="Logo">
+            </a>
+        </div>
+        <div class="navbar-buttons">
+            {% if user.is_authenticated %}
+            <a href="{% url 'patient:list' %}" class="nav-button patients">
+                {% translate "Patients" %}
+            </a>
+            <a href="{% url 'leads:list' %}" class="nav-button leads">
+                {% translate "Leads" %}
+            </a>
+            <a href="{% url 'doctor:list' %}" class="nav-button doctors">
+                <i class="bi bi-heart-pulse-fill"></i> {% translate "Doctors" %}
+            </a>
+            <a href="{% url 'office_assistant:assistant_list' %}" class="nav-button">
+                <i class="bi bi-person-badge"></i> {% translate "Assistants" %}
+            </a>
+            {% endif %}
+            <div class="navbar-dropdown">
+                <button class="dropdown-toggle" id="menuToggle" aria-haspopup="true" aria-expanded="false">
+                    Menu &#x25BC;
+                </button>
+                <div class="dropdown-menu" aria-labelledby="menuToggle" id="dropdownMenu">
+                    <a class="dropdown-item" href="{% url 'base:services' %}">{% translate "Services" %}</a>
+                    <a class="dropdown-item" href="{% url 'schedule:schedule' %}">{% translate "Schedule" %}</a>
+                    <a class="dropdown-item" href="{% url 'base:about' %}">{% translate "About" %}</a>
+                    <a class="dropdown-item" href="{% url 'office_assistant:task_list' %}">{% translate "Assistants" %}</a>
+                    {% if user.is_authenticated %}
+                        <div class="dropdown-item text-center">
+                            <strong>{{ user.username }}</strong><br>
+                            {% load permission_tags %}
+                            {% if has_group 'Administrator' %}
+                                <small class="text-muted">Administrator</small>
+                            {% elif has_group 'Doctor' %}
+                                <small class="text-muted">Doctor</small>
+                            {% elif has_group 'Office Assistant' %}
+                                <small class="text-muted">Office Assistant</small>
+                            {% elif has_group 'Lead' %}
+                                <small class="text-muted">Lead</small>
+                            {% else %}
+                                <small class="text-muted">User</small>
+                            {% endif %}
+                        </div>
+                        <hr class="dropdown-divider">
+                        <a class="dropdown-item" href="{% url 'users:dashboard' %}">{% translate "Dashboard" %}</a>
+                        <form action="{% url 'users:logout' %}" method="POST" style="display:inline;">
+                            {% csrf_token %}
+                            <button type="submit" class="dropdown-item" style="background:none; border:none; padding:0; cursor:pointer; width:100%; text-align:left;">
+                                {% translate 'Logout' %}
+                            </button>
+                        </form>
+                    {% else %}
+                        <a class="dropdown-item" href="{% url 'users:register' %}">{% translate "Register" %}</a>
+                        <a class="dropdown-item" href="{% url 'users:login' %}">{% translate "Login" %}</a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+<script>
+    // Dropdown toggle script
+    document.addEventListener('DOMContentLoaded', function() {
+        const menuToggle = document.getElementById('menuToggle');
+        const dropdownMenu = document.getElementById('dropdownMenu');
+
+        menuToggle.addEventListener('click', function() {
+            const expanded = menuToggle.getAttribute('aria-expanded') === 'true' || false;
+            menuToggle.setAttribute('aria-expanded', !expanded);
+            dropdownMenu.classList.toggle('show');
+        });
+
+        // Close dropdown when clicking outside
+        document.addEventListener('click', function(event) {
+            if (!menuToggle.contains(event.target) && !dropdownMenu.contains(event.target)) {
+                menuToggle.setAttribute('aria-expanded', false);
+                dropdownMenu.classList.remove('show');
+            }
+        });
+    });
+</script>

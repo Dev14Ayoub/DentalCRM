@@ -1,0 +1,50 @@
+{% load i18n %}
+
+<!-- New Prescription Modal -->
+<div class="modal fade" id="newPrescriptionModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <form method="post" action="{% url 'patient:create_prescription' patient.id %}">
+                {% csrf_token %}
+                <div class="modal-header">
+                    <h5 class="modal-title">{% trans "Write Prescription" %}</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="id_medication" class="form-label">{% trans "Medication" %}</label>
+                        <input type="text" name="medication" id="id_medication" class="form-control" 
+                               placeholder="{% trans 'Medication name' %}" required>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="id_dosage" class="form-label">{% trans "Dosage" %}</label>
+                        <input type="text" name="dosage" id="id_dosage" class="form-control" 
+                               placeholder="{% trans 'e.g., 500mg twice daily' %}" required>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="id_instructions" class="form-label">{% trans "Instructions" %}</label>
+                        <textarea name="instructions" id="id_instructions" rows="4" class="form-control" 
+                                placeholder="{% trans 'Instructions for use' %}" required></textarea>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="id_valid_until" class="form-label">{% trans "Valid Until (optional)" %}</label>
+                        <input type="date" name="valid_until" id="id_valid_until" class="form-control">
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="id_prescription_notes" class="form-label">{% trans "Additional Notes (optional)" %}</label>
+                        <textarea name="notes" id="id_prescription_notes" rows="2" class="form-control" 
+                                placeholder="{% trans 'Any additional notes or warnings' %}"></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{% trans "Cancel" %}</button>
+                    <button type="submit" class="btn btn-primary">{% trans "Write Prescription" %}</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

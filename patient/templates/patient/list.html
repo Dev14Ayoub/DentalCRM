@@ -1,0 +1,298 @@
+{% extends 'global/base.html' %}
+{% load static %}
+{% load i18n %}
+
+{% block content %}
+<div class="container-fluid mt-4">
+    <!-- Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2>{% trans "Patients" %}</h2>
+            <p class="text-muted mb-0">{% trans "Manage your patient records" %}</p>
+        </div>
+        <div>
+            <a href="{% url 'patient:dashboard' %}" class="btn btn-outline-primary me-2">
+                <i class="bi bi-graph-up"></i> {% trans "Dashboard" %}
+            </a>
+            <a href="{% url 'patient:create' %}" class="btn btn-primary">
+                <i class="bi bi-plus-lg"></i> {% trans "New Patient" %}
+            </a>
+        </div>
+    </div>
+
+    <!-- Statistics Cards -->
+    <div class="row mb-4">
+        <div class="col-md-4">
+            <div class="card bg-primary text-white">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h4 class="mb-0">{{ total_patients }}</h4>
+                            <p class="mb-0">{% trans "Total Patients" %}</p>
+                        </div>
+                        <div class="align-self-center">
+                            <i class="bi bi-people display-4"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card bg-info text-white">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h4 class="mb-0">{{ upcoming_appointments }}</h4>
+                            <p class="mb-0">{% trans "Upcoming Appointments" %}</p>
+                        </div>
+                        <div class="align-self-center">
+                            <i class="bi bi-calendar-check display-4"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card bg-warning text-white">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h4 class="mb-0">{{ patients.count }}</h4>
+                            <p class="mb-0">{% trans "This Page" %}</p>
+                        </div>
+                        <div class="align-self-center">
+                            <i class="bi bi-list display-4"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Search and Filters -->
+    <div class="card shadow mb-4">
+        <div class="card-body">
+            <form method="get" class="row g-3">
+                <div class="col-md-8">
+                    <label for="search" class="form-label">{% trans "Search Patients" %}</label>
+                    <div class="input-group">
+                        <span class="input-group-text">
+                            <i class="bi bi-search"></i>
+                        </span>
+                        <input type="text" name="search" id="search" class="form-control" 
+                               placeholder="{% trans 'Search by name, phone, or email...' %}" 
+                               value="{{ request.GET.search }}">
+                    </div>
+                </div>
+                <div class="col-md-4 d-flex align-items-end">
+                    <div class="btn-group w-100">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-search"></i> {% trans "Search" %}
+                        </button>
+                        <a href="{% url 'patient:list' %}" class="btn btn-outline-secondary">
+                            <i class="bi bi-x-lg"></i> {% trans "Clear" %}
+                        </a>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Patients Table -->
+    <div class="card">
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <h5 class="mb-0">{% trans "Patient List" %}</h5>
+            {% if request.GET.search %}
+            <span class="badge bg-primary">
+                {% trans "Search results for" %}: "{{ request.GET.search }}"
+            </span>
+            {% endif %}
+        </div>
+        <div class="card-body">
+            {% if patients %}
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>{% trans "ID" %}</th>
+                            <th>{% trans "Name" %}</th>
+                            <th>{% trans "Age" %}</th>
+                            <th>{% trans "Phone" %}</th>
+                            <th>{% trans "Email" %}</th>
+                            <th>{% trans "Primary Doctor" %}</th>
+                            <th>{% trans "Created" %}</th>
+                            <th>{% trans "Actions" %}</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for patient in patients %}
+                        <tr>
+                            <td>
+                                <code>{{ patient.id }}</code>
+                            </td>
+                            <td>
+                                <div class="d-flex align-items-center">
+                                    <div class="avatar-sm me-2">
+                                        <span>{{ patient.first_name|slice:":1" }}{{ patient.last_name|slice:":1" }}</span>
+                                    </div>
+                                    <div>
+                                        <strong>{{ patient.full_name }}</strong>
+                                        <div class="text-muted small">{{ patient.get_gender_display }}</div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>{{ patient.age }} {% trans "years" %}</td>
+                            <td>
+                                <a href="tel:{{ patient.phone }}" class="text-decoration-none">
+                                    {{ patient.phone }}
+                                </a>
+                            </td>
+                            <td>
+                                {% if patient.email %}
+                                <a href="mailto:{{ patient.email }}" class="text-decoration-none">
+                                    {{ patient.email }}
+                                </a>
+                                {% else %}
+                                <span class="text-muted">-</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if patient.primary_doctor %}
+                                {{ patient.primary_doctor.full_name }}
+                                {% else %}
+                                <span class="text-muted">{% trans "Not assigned" %}</span>
+                                {% endif %}
+                            </td>
+                            <td>{{ patient.created_at|date:"M d, Y" }}</td>
+            <td>
+                <div class="btn-group">
+                    <a href="{% url 'patient:detail' patient.pk %}" class="btn btn-sm btn-outline-primary">
+                        <i class="bi bi-eye"></i>
+                    </a>
+                    {% load permission_tags %}
+                    {% if perms.patient.change_patient %}
+                    <a href="{% url 'patient:update' patient.pk %}" class="btn btn-sm btn-outline-secondary">
+                        <i class="bi bi-pencil"></i>
+                    </a>
+                    {% endif %}
+                    {% if perms.patient.delete_patient %}
+                    <button type="button" class="btn btn-sm btn-outline-danger" 
+                            data-bs-toggle="modal" data-bs-target="#deleteModal{{ patient.id }}">
+                        <i class="bi bi-trash"></i>
+                    </button>
+                    {% endif %}
+                </div>
+            </td>
+                        </tr>
+
+                        <!-- Delete Modal -->
+                        <div class="modal fade" id="deleteModal{{ patient.id }}" tabindex="-1">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title">{% trans "Delete Patient" %}</h5>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <p>{% trans "Are you sure you want to delete" %} <strong>{{ patient.full_name }}</strong>?</p>
+                                        <p class="text-danger small">{% trans "This action cannot be undone and will delete all associated data." %}</p>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{% trans "Cancel" %}</button>
+                                        <a href="{% url 'patient:delete' patient.pk %}" class="btn btn-danger">{% trans "Delete" %}</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Pagination -->
+            {% if is_paginated %}
+            <nav aria-label="{% trans 'Patient pagination' %}">
+                <ul class="pagination justify-content-center">
+                    {% if page_obj.has_previous %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page=1{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}">{% trans "First" %}</a>
+                    </li>
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ page_obj.previous_page_number }}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}">{% trans "Previous" %}</a>
+                    </li>
+                    {% endif %}
+
+                    <li class="page-item active">
+                        <span class="page-link">
+                            {% trans "Page" %} {{ page_obj.number }} {% trans "of" %} {{ page_obj.paginator.num_pages }}
+                        </span>
+                    </li>
+
+                    {% if page_obj.has_next %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ page_obj.next_page_number }}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}">{% trans "Next" %}</a>
+                    </li>
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}">{% trans "Last" %}</a>
+                    </li>
+                    {% endif %}
+                </ul>
+            </nav>
+            {% endif %}
+            {% else %}
+            <div class="text-center py-5">
+                <div class="mb-3">
+                    <i class="bi bi-person-plus display-1 text-muted"></i>
+                </div>
+                <h4>{% trans "No Patients Yet" %}</h4>
+                <p class="text-muted">{% trans "Start by adding your first patient" %}</p>
+                <a href="{% url 'patient:create' %}" class="btn btn-primary">
+                    <i class="bi bi-plus-lg"></i> {% trans "Add First Patient" %}
+                </a>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+    .avatar-sm {
+        width: 40px;
+        height: 40px;
+        background: linear-gradient(135deg, #4e73df 0%, #224abe 100%);
+        color: white;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.875rem;
+        font-weight: 600;
+    }
+
+    .card {
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    }
+
+    .table th {
+        border-top: none;
+        font-weight: 600;
+        color: #5a5c69;
+    }
+
+    .btn-group .btn {
+        border-radius: 0.25rem;
+        margin-right: 2px;
+    }
+
+    .btn-group .btn:last-child {
+        margin-right: 0;
+    }
+</style>
+{% endblock %}

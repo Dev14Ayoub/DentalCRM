@@ -1,0 +1,68 @@
+{% extends 'global/base.html' %}
+{% load static %}
+{% load i18n %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow">
+                <div class="card-header bg-info text-white">
+                    <h4 class="mb-0">{% trans "Lead Details" %} #{{ lead.id }}</h4>
+                </div>
+                
+                <div class="card-body">
+                    <dl class="row">
+                        <dt class="col-sm-3">{% trans "Name" %}</dt>
+                        <dd class="col-sm-9">{{ lead.name }}</dd>
+
+                        <dt class="col-sm-3">{% trans "Email" %}</dt>
+                        <dd class="col-sm-9">{{ lead.email }}</dd>
+
+                        <dt class="col-sm-3">{% trans "Phone" %}</dt>
+                        <dd class="col-sm-9">{{ lead.phone }}</dd>
+
+                        <dt class="col-sm-3">{% trans "Status" %}</dt>
+                        <dd class="col-sm-9">
+                            <span class="badge 
+                                {% if lead.status == 'new' %}bg-secondary
+                                {% elif lead.status == 'contacted' %}bg-primary
+                                {% elif lead.status == 'converted' %}bg-success
+                                {% else %}bg-danger
+                                {% endif %}">
+                                {{ lead.get_status_display }}
+                            </span>
+                        </dd>
+
+                        <dt class="col-sm-3">{% trans "Source" %}</dt>
+                        <dd class="col-sm-9">{{ lead.get_source_display }}</dd>
+
+                        <dt class="col-sm-3">{% trans "Created At" %}</dt>
+                        <dd class="col-sm-9">{{ lead.created_at|date:"M d, Y H:i" }}</dd>
+
+                        <dt class="col-sm-3">{% trans "Last Updated" %}</dt>
+                        <dd class="col-sm-9">{{ lead.updated_at|date:"M d, Y H:i" }}</dd>
+
+                        <dt class="col-sm-3">{% trans "Notes" %}</dt>
+                        <dd class="col-sm-9">{{ lead.notes|linebreaks }}</dd>
+                    </dl>
+
+                    <div class="mt-4 d-flex justify-content-between">
+                        <a href="{% url 'leads:list' %}" class="btn btn-secondary">
+                            <i class="bi bi-arrow-left me-2"></i>{% trans "Back to List" %}
+                        </a>
+                        <div>
+                            <a href="{% url 'leads:update' lead.pk %}" class="btn btn-warning">
+                                <i class="bi bi-pencil-square me-2"></i>{% trans "Edit" %}
+                            </a>
+                            <a href="{% url 'leads:delete' lead.pk %}" class="btn btn-danger">
+                                <i class="bi bi-trash me-2"></i>{% trans "Delete" %}
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

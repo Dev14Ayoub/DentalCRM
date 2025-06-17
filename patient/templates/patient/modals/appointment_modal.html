@@ -1,0 +1,114 @@
+{% load i18n %}
+
+<!-- New Appointment Modal -->
+<div class="modal fade" id="newAppointmentModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <form method="post" action="{% url 'patient:create_appointment' patient.id %}">
+                {% csrf_token %}
+                <div class="modal-header">
+                    <h5 class="modal-title">{% trans "Schedule New Appointment" %}</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="id_date" class="form-label">{% trans "Date" %}</label>
+                            <input type="date" name="date" id="id_date" class="form-control" required>
+                        </div>
+                        
+                        <div class="col-md-6 mb-3">
+                            <label for="id_time" class="form-label">{% trans "Time" %}</label>
+                            <input type="time" name="time" id="id_time" class="form-control" required>
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="id_duration" class="form-label">{% trans "Duration (minutes)" %}</label>
+                            <input type="number" name="duration" id="id_duration" class="form-control" value="30" min="15" step="15">
+                        </div>
+                        
+                        <div class="col-md-6 mb-3">
+                            <label for="id_treatment_plan" class="form-label">{% trans "Treatment Plan" %}</label>
+                            <select name="treatment_plan" id="id_treatment_plan" class="form-select">
+                                <option value="">{% trans "Select Treatment Plan" %}</option>
+                                {% for plan in treatment_plans %}
+                                <option value="{{ plan.id }}">{{ plan.title }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="id_appointment_notes" class="form-label">{% trans "Notes" %}</label>
+                        <textarea name="appointment_notes" id="id_appointment_notes" rows="3" class="form-control" 
+                                placeholder="{% trans 'Any special instructions or notes for this appointment' %}"></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{% trans "Cancel" %}</button>
+                    <button type="submit" class="btn btn-primary">{% trans "Schedule Appointment" %}</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Add Photo Modal -->
+{% for appointment in appointments %}
+<div class="modal fade" id="addPhotoModal{{ appointment.id }}" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form method="post" action="{% url 'patient:add_appointment_photo' appointment.id %}" enctype="multipart/form-data">
+                {% csrf_token %}
+                <div class="modal-header">
+                    <h5 class="modal-title">{% trans "Add Photo" %}</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="id_photo_{{ appointment.id }}" class="form-label">{% trans "Photo" %}</label>
+                        <input type="file" name="photo" id="id_photo_{{ appointment.id }}" class="form-control" accept="image/*" required>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="id_caption_{{ appointment.id }}" class="form-label">{% trans "Caption (optional)" %}</label>
+                        <input type="text" name="caption" id="id_caption_{{ appointment.id }}" class="form-control">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{% trans "Cancel" %}</button>
+                    <button type="submit" class="btn btn-primary">{% trans "Add Photo" %}</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Add Note Modal -->
+<div class="modal fade" id="addNoteModal{{ appointment.id }}" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form method="post" action="{% url 'patient:add_patient_note' patient.id %}">
+                {% csrf_token %}
+                <input type="hidden" name="appointment" value="{{ appointment.id }}">
+                <div class="modal-header">
+                    <h5 class="modal-title">{% trans "Add Note" %}</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="id_note_{{ appointment.id }}" class="form-label">{% trans "Note" %}</label>
+                        <textarea name="note" id="id_note_{{ appointment.id }}" rows="4" class="form-control" required></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{% trans "Cancel" %}</button>
+                    <button type="submit" class="btn btn-primary">{% trans "Add Note" %}</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endfor %}

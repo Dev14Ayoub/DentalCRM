@@ -1,0 +1,64 @@
+{% load i18n %}
+
+<!-- New Payment Modal -->
+<div class="modal fade" id="newPaymentModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <form id="paymentForm" method="post" action="{% url 'patient:create_payment' patient.id %}">
+                {% csrf_token %}
+                <div class="modal-header">
+                    <h5 class="modal-title">{% trans "Record Payment" %}</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="id_amount" class="form-label">{% trans "Amount" %}</label>
+                            <div class="input-group">
+                                <span class="input-group-text">$</span>
+                                <input type="number" name="amount" id="id_amount" class="form-control" step="0.01" required>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-6 mb-3">
+                            <label for="id_payment_method" class="form-label">{% trans "Payment Method" %}</label>
+                            <select name="payment_method" id="id_payment_method" class="form-select" required>
+                                <option value="">{% trans "Select Payment Method" %}</option>
+                                <option value="cash">{% trans "Cash" %}</option>
+                                <option value="card">{% trans "Credit/Debit Card" %}</option>
+                                <option value="insurance">{% trans "Insurance" %}</option>
+                                <option value="transfer">{% trans "Bank Transfer" %}</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="id_treatment_plan_payment" class="form-label">{% trans "Treatment Plan" %}</label>
+                        <select name="treatment_plan" id="id_treatment_plan_payment" class="form-select">
+                            <option value="">{% trans "Select Treatment Plan (optional)" %}</option>
+                            {% for plan in treatment_plans %}
+                            <option value="{{ plan.id }}">{{ plan.title }} - ${{ plan.patient_responsibility|floatformat:2 }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="id_transaction_id" class="form-label">{% trans "Transaction ID (optional)" %}</label>
+                        <input type="text" name="transaction_id" id="id_transaction_id" class="form-control" 
+                               placeholder="{% trans 'Reference number or transaction ID' %}">
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="id_payment_notes" class="form-label">{% trans "Notes (optional)" %}</label>
+                        <textarea name="notes" id="id_payment_notes" rows="3" class="form-control" 
+                                placeholder="{% trans 'Any additional notes about this payment' %}"></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{% trans "Cancel" %}</button>
+                    <button type="submit" class="btn btn-success" id="submitPaymentBtn">{% trans "Record Payment" %}</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

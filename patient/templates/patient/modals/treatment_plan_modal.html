@@ -1,0 +1,100 @@
+{% load i18n %}
+
+<!-- New Treatment Plan Modal -->
+<div class="modal fade" id="newTreatmentPlanModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <form method="post" action="{% url 'patient:create_treatment_plan' patient.id %}">
+                {% csrf_token %}
+                <div class="modal-header">
+                    <h5 class="modal-title">{% trans "New Treatment Plan" %}</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="id_title" class="form-label">{% trans "Title" %}</label>
+                        <input type="text" name="title" id="id_title" class="form-control" required>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="id_description" class="form-label">{% trans "Description" %}</label>
+                        <textarea name="description" id="id_description" rows="4" class="form-control" required></textarea>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="id_estimated_cost" class="form-label">{% trans "Estimated Cost" %}</label>
+                            <div class="input-group">
+                                <span class="input-group-text">$</span>
+                                <input type="number" name="estimated_cost" id="id_estimated_cost" class="form-control" step="0.01" required>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-6 mb-3">
+                            <label for="id_insurance_coverage" class="form-label">{% trans "Insurance Coverage" %}</label>
+                            <div class="input-group">
+                                <span class="input-group-text">$</span>
+                                <input type="number" name="insurance_coverage" id="id_insurance_coverage" class="form-control" step="0.01" value="0">
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">{% trans "Patient Responsibility" %}</label>
+                        <div class="p-2 border rounded bg-light">
+                            <span id="patient-responsibility-display">$0.00</span>
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="id_start_date" class="form-label">{% trans "Start Date" %}</label>
+                            <input type="date" name="start_date" id="id_start_date" class="form-control">
+                        </div>
+                        
+                        <div class="col-md-6 mb-3">
+                            <label for="id_end_date" class="form-label">{% trans "Expected End Date" %}</label>
+                            <input type="date" name="end_date" id="id_end_date" class="form-control">
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{% trans "Cancel" %}</button>
+                    <button type="submit" class="btn btn-primary">{% trans "Create Plan" %}</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Update Treatment Status Modal -->
+{% for plan in treatment_plans %}
+<div class="modal fade" id="updateTreatmentStatusModal{{ plan.id }}" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form method="post" action="{% url 'patient:update_treatment_plan_status' plan.id %}">
+                {% csrf_token %}
+                <div class="modal-header">
+                    <h5 class="modal-title">{% trans "Update Treatment Status" %}</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="id_status_{{ plan.id }}" class="form-label">{% trans "Status" %}</label>
+                        <select name="status" id="id_status_{{ plan.id }}" class="form-select">
+                            <option value="planned" {% if plan.status == 'planned' %}selected{% endif %}>{% trans "Planned" %}</option>
+                            <option value="in_progress" {% if plan.status == 'in_progress' %}selected{% endif %}>{% trans "In Progress" %}</option>
+                            <option value="completed" {% if plan.status == 'completed' %}selected{% endif %}>{% trans "Completed" %}</option>
+                            <option value="cancelled" {% if plan.status == 'cancelled' %}selected{% endif %}>{% trans "Cancelled" %}</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{% trans "Cancel" %}</button>
+                    <button type="submit" class="btn btn-primary">{% trans "Update Status" %}</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endfor %}

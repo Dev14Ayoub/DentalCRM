@@ -1,0 +1,30 @@
+{% load i18n %}
+
+<!-- New Note Modal -->
+<div class="modal fade" id="newNoteModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form method="post" action="{% url 'patient:add_patient_note' patient.id %}">
+                {% csrf_token %}
+                <div class="modal-header">
+                    <h5 class="modal-title">{% trans "Add Note" %}</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="id_note_text" class="form-label">{% trans "Note" %}</label>
+                        <textarea name="note" id="id_note_text" rows="5" class="form-control" 
+                                placeholder="{% trans 'Enter your note here...' %}" required></textarea>
+                        <div class="form-text">
+                            {% trans "Add any observations, follow-ups, or important information about the patient." %}
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{% trans "Cancel" %}</button>
+                    <button type="submit" class="btn btn-primary">{% trans "Save Note" %}</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
