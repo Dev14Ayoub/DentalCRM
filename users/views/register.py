@@ -32,8 +32,9 @@ class UserCreateView(View):
 
     def post(self, request):
         POST = request.POST
+        FILES = request.FILES
         request.session['register_form_data'] = POST
-        form = RegisterForm(POST)
+        form = RegisterForm(POST, FILES)
         print(f"DEBUG: form.is_valid() = {form.is_valid()}")
         if not form.is_valid():
             print(f"DEBUG: form.errors = {form.errors}")

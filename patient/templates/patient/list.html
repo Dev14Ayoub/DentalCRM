@@ -14,9 +14,17 @@
             <a href="{% url 'patient:dashboard' %}" class="btn btn-outline-primary me-2">
                 <i class="bi bi-graph-up"></i> {% trans "Dashboard" %}
             </a>
+            {% if perms.patient.add_patient %}
             <a href="{% url 'patient:create' %}" class="btn btn-primary">
                 <i class="bi bi-plus-lg"></i> {% trans "New Patient" %}
             </a>
+            {% else %}
+
+            <div class="alert alert-danger d-inline-block mb-0" role="alert" style="padding: 0.375rem 0.75rem; font-size: 0.875rem;">
+                {% trans "You do not have permission to add patients." %}
+            </div>
+            
+            {% endif %}
         </div>
     </div>
 

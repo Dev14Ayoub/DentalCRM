@@ -50,6 +50,10 @@ INSTALLED_APPS = [
     'schedule',
     'users',
     'leads',
+    'doctor',
+    'patient',
+    'clinic',
+    'office_assistant',
 ]
 
 MIDDLEWARE = [
@@ -194,7 +198,7 @@ STATIC_URL = '/static/'
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 
 STATICFILES_DIRS = [
-    BASE_DIR / 'base_static',
+    BASE_DIR.parent / 'base_static',
 ]
 
 USE_TZ = False  # Set to False to keep current behavior and suppress RemovedInDjango50Warning

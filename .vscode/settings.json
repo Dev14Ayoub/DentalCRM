@@ -60,5 +60,6 @@
     "javascript": "javascriptreact",
     "typescript": "typescriptreact"
   },
-  "python.formatting.provider": "none"
+  "python.formatting.provider": "none",
+  "deepseek.apikey": "sk-772818bbbb054286b46bbbd050a5b27d"
 }

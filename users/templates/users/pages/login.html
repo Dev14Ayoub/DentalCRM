@@ -52,13 +52,15 @@
                         {% endif %}
                     </div>
                     <div class="input-group">
+                    <div class="input-group">
                         <input type="password" name="password" id="id_password" 
                             class="form-control form-control-lg {% if form.password.errors %}is-invalid{% endif %}" 
                             placeholder="{% translate 'Enter your password' %}" required
                             autocomplete="current-password">
-                        <button class="btn btn-outline-secondary toggle-password" type="button">
+                        <button class="btn btn-outline-secondary toggle-password position-absolute top-50 end-0 translate-middle-y me-2" type="button" data-bs-toggle="tooltip" data-bs-placement="left" title="{% translate 'Show Password' %}">
                             <i class="bi bi-eye"></i>
                         </button>
+                    </div>
                     </div>
                     {% if form.password.errors %}
                         <div class="invalid-feedback">
