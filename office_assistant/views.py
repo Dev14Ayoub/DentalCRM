@@ -3,11 +3,20 @@ from django.views.generic import ListView, CreateView, UpdateView, DetailView, D
 from django.urls import reverse_lazy
 from .models import  Note, AppointmentReminder, OfficeAssistant
 from .forms import NoteForm, AppointmentReminderForm, OfficeAssistantForm
+from administrator.views_rbac import admin_required
+from django.utils.decorators import method_decorator
 
 class AssistantListView(ListView):
     model = OfficeAssistant
     template_name = 'office_assistant/list.html'
     context_object_name = 'assistants'
+
+    def get_queryset(self):
+        user = self.request.user
+        if hasattr(user, 'profile') and user.profile.clinic:
+            return OfficeAssistant.objects.filter(clinic=user.profile.clinic)
+        else:
+            return OfficeAssistant.objects.none()
 
 class AssistantCreateView(CreateView):
     model = OfficeAssistant
@@ -31,6 +40,7 @@ class AssistantDeleteView(DeleteView):
     template_name = 'office_assistant/delete.html'
     success_url = reverse_lazy('office_assistant:assistant_list')
 
+@method_decorator(admin_required, name='dispatch')
 class OfficeAssistantCreateView(CreateView):
     model = OfficeAssistant
     form_class = OfficeAssistantForm

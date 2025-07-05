@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>Doctor Availabilities</h1>
+<a href="{% url 'calendar_app:doctoravailability_create' %}">Add Availability</a>
+<ul>
+  {% for availability in availabilities %}
+    <li>
+      {{ availability }} -
+      <a href="{% url 'calendar_app:doctoravailability_update' availability.pk %}">Edit</a> |
+      <a href="{% url 'calendar_app:doctoravailability_delete' availability.pk %}">Delete</a>
+    </li>
+  {% empty %}
+    <li>No availabilities found.</li>
+  {% endfor %}
+</ul>
+{% endblock %}

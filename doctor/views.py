@@ -2,6 +2,8 @@ from django.views.generic import ListView, CreateView, UpdateView, DetailView, D
 from django.urls import reverse_lazy
 from .models import Doctor
 from .forms import DoctorForm
+from administrator.views_rbac import admin_required
+from django.utils.decorators import method_decorator
 
 class DoctorListView(ListView):
     model = Doctor
@@ -9,8 +11,13 @@ class DoctorListView(ListView):
     context_object_name = 'doctors'
     
     def get_queryset(self):
-        return Doctor.objects.filter(is_active=True)
+        user = self.request.user
+        if hasattr(user, 'profile') and user.profile.clinic:
+            return Doctor.objects.filter(clinic=user.profile.clinic)
+        else:
+            return Doctor.objects.none()
 
+@method_decorator(admin_required, name='dispatch')
 class DoctorCreateView(CreateView):
     model = Doctor
     form_class = DoctorForm

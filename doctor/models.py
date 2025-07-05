@@ -24,7 +24,6 @@ class Doctor(models.Model):
     clinic = models.ForeignKey('clinic.Clinic', on_delete=models.CASCADE, related_name='doctor_clinic', null=True, blank=True)
     profile_photo = models.ImageField(upload_to='profile_photos/', null=True, blank=True)
     password = models.CharField(max_length=128, null=True, blank=True)
-    is_active = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 

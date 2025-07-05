@@ -80,7 +80,7 @@ class AppointmentForm(forms.ModelForm):
         self.fields['time'].widget.choices = initial_times or time_choices
 
         # Add doctor field with active doctors only
-        self.fields['doctor'].queryset = Doctor.objects.filter(is_active=True)
+        self.fields['doctor'].queryset = Doctor.objects.all()
 
     class Meta:
         model = Appointment

@@ -31,7 +31,7 @@ class PaymentInline(admin.TabularInline):
     model = Payment
     extra = 0
     readonly_fields = ('payment_date',)
-    fields = ('amount', 'payment_method', 'status', 'treatment_plan')
+    fields = ('amount', 'payment_method', 'treatment_plan')
 
 class PrescriptionInline(admin.TabularInline):
     model = Prescription

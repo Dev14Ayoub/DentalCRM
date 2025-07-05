@@ -36,6 +36,10 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # Application definition
 
+AUTHENTICATION_BACKENDS = [
+    'django.contrib.auth.backends.ModelBackend',
+]
+
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
@@ -43,6 +47,19 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'rest_framework',
+    'users',
+    'administrator',
+    'clinic',
+    'doctor',
+    'office_assistant',
+    'patient',
+    'leads',
+    'schedule',
+    'base',
+    'calendar_app',
+]
+INSTALLED_APPS = [
     'django.contrib.humanize',
     'corsheaders',
     'drf_yasg',
@@ -54,15 +71,31 @@ INSTALLED_APPS = [
     'patient',
     'clinic',
     'office_assistant',
+    'administrator',
+    'calendar_app',
+]
+
+MIDDLEWARE = [
+    'django.middleware.security.SecurityMiddleware',
+    'django.contrib.sessions.middleware.SessionMiddleware',
+    'django.middleware.common.CommonMiddleware',
+    'django.middleware.csrf.CsrfViewMiddleware',
+    'django.contrib.auth.middleware.AuthenticationMiddleware',
+    'django.contrib.messages.middleware.MessageMiddleware',
+    'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'config.middleware_access_control.AccessControlMiddleware',
+    'users.middleware.PasswordChangeRequiredMiddleware',
 ]
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     "whitenoise.middleware.WhiteNoiseMiddleware",
+    'config.middleware_admin_session.AdminSessionMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'corsheaders.middleware.CorsMiddleware',
     'config.middleware.ForceEnglishMiddleware',
     'config.middleware.ForceEnglishAdminMiddleware',
+    'config.middleware_access_control.AccessControlMiddleware',
     #'django.middleware.locale.LocaleMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -136,7 +169,7 @@ TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
         'DIRS': [
-            BASE_DIR / 'base_templates',
+            BASE_DIR.parent / 'base_templates',
         ],
         'APP_DIRS': True,
         'OPTIONS': {

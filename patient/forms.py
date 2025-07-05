@@ -5,6 +5,12 @@ from .models import (
 )
 
 class PatientForm(forms.ModelForm):
+    GENDER_CHOICES = [
+        ('M', 'Male'),
+        ('F', 'Female'),
+    ]
+    gender = forms.ChoiceField(choices=GENDER_CHOICES, widget=forms.Select(attrs={'class': 'form-select'}))
+
     class Meta:
         model = Patient
         fields = '__all__'
@@ -41,24 +47,11 @@ class PatientForm(forms.ModelForm):
                 'class': 'form-control',
                 'placeholder': 'Email Address'
             }),
-            'gender': forms.Select(attrs={'class': 'form-select'}),
             'primary_doctor': forms.Select(attrs={'class': 'form-select'}),
         }
 
 class PatientCreateForm(PatientForm):
-    initial_note = forms.CharField(
-        widget=forms.Textarea(attrs={'rows': 3, 'class': 'form-control'}),
-        required=False,
-        label='Initial Note'
-    )
-
-    def save(self, commit=True):
-        patient = super().save(commit)
-        if commit:
-            note_text = self.cleaned_data.get('initial_note')
-            if note_text:
-                PatientNote.objects.create(patient=patient, note=note_text)
-        return patient
+    pass
 
 class PatientUpdateForm(PatientForm):
     def save(self, commit=True):

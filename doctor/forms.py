@@ -9,7 +9,18 @@ class DoctorForm(forms.ModelForm):
 
     class Meta:
         model = Doctor
-        fields = '__all__'
+        fields = [
+            'first_name',
+            'last_name',
+            'username',
+            'specialization',
+            'phone',
+            'email',
+            'address',
+            'clinic',
+            'profile_photo',
+            'password',
+        ]
         widgets = {
             'address': forms.Textarea(attrs={'rows': 3}),
             'profile_photo': forms.ClearableFileInput(attrs={'class': 'form-control'}),

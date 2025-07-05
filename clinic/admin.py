@@ -7,7 +7,7 @@ from users.models import Profile
 class DoctorInline(admin.TabularInline):
     model = Doctor
     extra = 0
-    fields = ('first_name', 'last_name', 'specialization', 'phone', 'email', 'is_active')
+    fields = ('first_name', 'last_name', 'specialization', 'phone', 'email')
     show_change_link = True
 
 class ProfileInline(admin.TabularInline):

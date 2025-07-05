@@ -1,0 +1,139 @@
+{% extends "global/base.html" %}
+
+{% block content %}
+<h1>RBAC Management</h1>
+
+<h2>Users and Roles</h2>
+<table border="1" cellpadding="5" cellspacing="0">
+    <thead>
+        <tr>
+            <th>User</th>
+            {% for role in roles %}
+            <th>{{ role.name }}</th>
+            {% endfor %}
+        </tr>
+    </thead>
+    <tbody>
+        {% for user in users %}
+        <tr>
+            <td>{{ user.username }}</td>
+            {% for role in roles %}
+            <td>
+                <input type="checkbox" class="user-role-checkbox" data-user-id="{{ user.id }}" data-role-id="{{ role.id }}"
+                {% if user.userrole_set.all|dictsort:"role.id"|dictsortreversed:"True"|default_if_none:"" %}
+                    {% for ur in user.userrole_set.all %}
+                        {% if ur.role.id == role.id %}
+                            checked
+                        {% endif %}
+                    {% endfor %}
+                {% endif %}
+                >
+            </td>
+            {% endfor %}
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+<h2>Roles and Permissions</h2>
+<table border="1" cellpadding="5" cellspacing="0">
+    <thead>
+        <tr>
+            <th>Role</th>
+            {% for permission in permissions %}
+            <th>{{ permission.name }}</th>
+            {% endfor %}
+        </tr>
+    </thead>
+    <tbody>
+        {% for role in roles %}
+        <tr>
+            <td>{{ role.name }}</td>
+            {% for permission in permissions %}
+            <td>
+                <input type="checkbox" class="role-permission-checkbox" data-role-id="{{ role.id }}" data-permission-id="{{ permission.id }}"
+                {% if role.rolepermission_set.all|dictsort:"permission.id"|dictsortreversed:"True"|default_if_none:"" %}
+                    {% for rp in role.rolepermission_set.all %}
+                        {% if rp.permission.id == permission.id %}
+                            checked
+                        {% endif %}
+                    {% endfor %}
+                {% endif %}
+                >
+            </td>
+            {% endfor %}
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    function csrfSafeMethod(method) {
+        return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
+    }
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+    const csrftoken = getCookie('csrftoken');
+
+    function sendToggleRequest(url, data) {
+        fetch(url, {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': csrftoken,
+                'Content-Type': 'application/x-www-form-urlencoded',
+            },
+            body: new URLSearchParams(data)
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (!data.success) {
+                alert('Error: ' + (data.error || 'Unknown error'));
+            }
+        })
+        .catch(error => {
+            alert('Request failed: ' + error);
+        });
+    }
+
+    document.querySelectorAll('.user-role-checkbox').forEach(function(checkbox) {
+        checkbox.addEventListener('change', function() {
+            const userId = this.dataset.userId;
+            const roleId = this.dataset.roleId;
+            const action = this.checked ? 'assign' : 'revoke';
+            sendToggleRequest('{% url "administrator:toggle_user_role" %}', {
+                user_id: userId,
+                role_id: roleId,
+                action: action
+            });
+        });
+    });
+
+    document.querySelectorAll('.role-permission-checkbox').forEach(function(checkbox) {
+        checkbox.addEventListener('change', function() {
+            const roleId = this.dataset.roleId;
+            const permissionId = this.dataset.permissionId;
+            const action = this.checked ? 'assign' : 'revoke';
+            sendToggleRequest('{% url "administrator:toggle_role_permission" %}', {
+                role_id: roleId,
+                permission_id: permissionId,
+                action: action
+            });
+        });
+    });
+});
+</script>
+
+{% endblock %}

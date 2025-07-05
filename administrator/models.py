@@ -29,3 +29,14 @@ class UserRole(models.Model):
 
     class Meta:
         unique_together = ('user', 'role')
+
+class AuditLog(models.Model):
+    user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
+    action_type = models.CharField(max_length=100)
+    object_type = models.CharField(max_length=100, blank=True)
+    object_id = models.PositiveIntegerField(null=True, blank=True)
+    timestamp = models.DateTimeField(auto_now_add=True)
+    description = models.TextField(blank=True)
+
+    def __str__(self):
+        return f"{self.timestamp} - {self.user} - {self.action_type}"

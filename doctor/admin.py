@@ -4,9 +4,9 @@ from django.utils.html import format_html
 
 @admin.register(Doctor)
 class DoctorAdmin(admin.ModelAdmin):
-    list_display = ('username', 'full_name', 'get_specialization_display', 'email', 'phone', 'profile_photo_display', 'is_active')
+    list_display = ('username', 'full_name', 'get_specialization_display', 'email', 'phone', 'profile_photo_display')
     search_fields = ('username', 'full_name', 'email', 'phone')
-    list_filter = ('is_active', 'specialization')
+    list_filter = ('specialization',)
 
     def profile_photo_display(self, obj):
         if obj.profile_photo:

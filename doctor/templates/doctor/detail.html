@@ -28,12 +28,7 @@
                         <dt class="col-sm-3">{% trans "Phone" %}</dt>
                         <dd class="col-sm-9">{{ doctor.phone }}</dd>
 
-                        <dt class="col-sm-3">{% trans "Status" %}</dt>
-                        <dd class="col-sm-9">
-                            <span class="badge {% if doctor.is_active %}bg-success{% else %}bg-danger{% endif %}">
-                                {% if doctor.is_active %}{% trans "Active" %}{% else %}{% trans "Inactive" %}{% endif %}
-                            </span>
-                        </dd>
+                        
 
                         <dt class="col-sm-3">{% trans "Address" %}</dt>
                         <dd class="col-sm-9">{{ doctor.address|linebreaks }}</dd>

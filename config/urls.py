@@ -36,6 +36,8 @@ schema_view = get_schema_view(
 )
 
 
+from django.urls import include
+
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include('base.urls')),
@@ -46,6 +48,8 @@ urlpatterns = [
     path('doctors/', include('doctor.urls', namespace='doctor')),
     path('clinic/', include(('clinic.urls', 'clinic'), namespace='clinic')),
     path('office_assistant/', include(('office_assistant.urls', 'office_assistant'), namespace='office_assistant')),
+    path('administrator/', include(('administrator.urls', 'administrator'), namespace='administrator')),
+    path('calendar/', include('calendar_app.urls')),
     path('swagger<format>/',
          schema_view.without_ui(cache_timeout=0), name='schema-json'),
     path('swagger/', schema_view.with_ui('swagger', cache_timeout=0),

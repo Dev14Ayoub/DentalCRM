@@ -1,0 +1,38 @@
+<div class="modal fade" id="newPrescriptionModal" tabindex="-1" aria-labelledby="newPrescriptionModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <form method="post" action="{% url 'patient:create_prescription' patient.id %}">
+                {% csrf_token %}
+                <div class="modal-header">
+                    <h5 class="modal-title" id="newPrescriptionModalLabel">{% trans "Write Prescription" %}</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"
+                        aria-label="{% trans 'Close' %}"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="id_medication" class="form-label">{% trans "Medication" %}</label>
+                        {{ prescription_form.medication }}
+                    </div>
+                    <div class="mb-3">
+                        <label for="id_dosage" class="form-label">{% trans "Dosage" %}</label>
+                        {{ prescription_form.dosage }}
+                    </div>
+                    <div class="mb-3">
+                        <label for="id_instructions" class="form-label">{% trans "Instructions" %}</label>
+                        {{ prescription_form.instructions }}
+                    </div>
+                    <div class="mb-3">
+                        <label for="id_valid_until" class="form-label">{% trans "Valid Until" %}</label>
+                        {{ prescription_form.valid_until }}
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{% trans "Cancel"
+                        %}</button>
+                    <button type="submit" class="btn btn-primary">{% trans "Save Prescription" %}</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

@@ -168,6 +168,16 @@ class RegisterForm(forms.ModelForm):
             })
         return cleaned_data
 
+    def clean_clinic(self):
+        clinic_name = self.cleaned_data.get('clinic')
+        from clinic.models import Clinic
+        if Clinic.objects.filter(name__iexact=clinic_name).exists():
+            raise ValidationError(
+                _('This clinic name already exists. Please choose a different name.'),
+                code='unique',
+            )
+        return clinic_name
+
     def save(self, commit=True):
         user = super().save(commit=False)
 
@@ -190,6 +200,16 @@ class RegisterForm(forms.ModelForm):
             from clinic.models import Clinic
             clinic_obj, created = Clinic.objects.get_or_create(name=clinic_name)
             profile.clinic = clinic_obj
+
+            # Assign 'administrator' role to this user for the clinic
+            from administrator.models import Role, UserRole
+            try:
+                admin_role = Role.objects.get(name='administrator')
+                UserRole.objects.get_or_create(user=user, role=admin_role)
+            except Role.DoesNotExist:
+                # Role not found, optionally log or handle
+                pass
+
         profile.save()
 
         return user

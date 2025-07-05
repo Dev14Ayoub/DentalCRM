@@ -1,4 +1,3 @@
-import logging
 from django.test import TestCase, Client
 from django.contrib.auth.models import User, Group, Permission
 from django.urls import reverse
@@ -15,23 +14,96 @@ class AuditLoggingMiddlewareTests(TestCase):
         self.user = User.objects.create_user(username='testuser', password='testpass')
         self.user.groups.add(self.group)
 
-    @patch('patient.middleware.audit_logging.logger')
-    def test_audit_logging_anonymous_user(self, mock_logger):
-        response = self.client.get(reverse('patient:list'))
-        self.assertEqual(response.status_code, 302)  # Redirect to login or permission denied
-        self.assertTrue(mock_logger.info.called)
+    def test_audit_logging_anonymous_user(self):
+        from patient.middleware.audit_logging import AuditLoggingMiddleware
+        from unittest.mock import Mock
+        mock_logger = Mock()
+        mock_get_response = Mock()
+        middleware = AuditLoggingMiddleware(get_response=mock_get_response, logger=mock_logger)
+        mock_request = Mock()
+        mock_request.user.is_authenticated = False
+        mock_request.method = 'GET'
+        mock_request.get_full_path.return_value = '/patients/'
+        response_mock = Mock()
+        mock_get_response.return_value = response_mock
+
+        result = middleware(mock_request)
+
+        mock_logger.info.assert_called_once()
         log_msg = mock_logger.info.call_args[0][0]
+        print(f"Test: audit_logging_anonymous_user logged message: {log_msg}")
         self.assertIn('GET', log_msg)
         self.assertIn('/patients/', log_msg)
         self.assertIn('anonymous user', log_msg)
+        self.assertEqual(result, response_mock)
 
-    @patch('patient.middleware.audit_logging.logger')
-    def test_audit_logging_authenticated_user(self, mock_logger):
-        self.client.login(username='testuser', password='testpass')
-        response = self.client.get(reverse('patient:list'))
-        self.assertIn(response.status_code, [200, 403])  # Depending on permissions
-        self.assertTrue(mock_logger.info.called)
+    def test_audit_logging_authenticated_user(self):
+        from patient.middleware.audit_logging import AuditLoggingMiddleware
+        from unittest.mock import Mock
+        mock_logger = Mock()
+        mock_get_response = Mock()
+        middleware = AuditLoggingMiddleware(get_response=mock_get_response, logger=mock_logger)
+        mock_request = Mock()
+        mock_request.user.is_authenticated = True
+        mock_request.user.username = 'testuser'
+        mock_request.method = 'GET'
+        mock_request.get_full_path.return_value = '/patients/'
+        response_mock = Mock()
+        mock_get_response.return_value = response_mock
+
+        result = middleware(mock_request)
+
+        mock_logger.info.assert_called_once()
         log_msg = mock_logger.info.call_args[0][0]
+        print(f"Test: audit_logging_authenticated_user logged message: {log_msg}")
         self.assertIn('GET', log_msg)
         self.assertIn('/patients/', log_msg)
         self.assertIn('user=testuser', log_msg)
+        self.assertEqual(result, response_mock)
+
+    def test_middleware_logging_direct_call(self):
+        from patient.middleware.audit_logging import AuditLoggingMiddleware
+        from unittest.mock import Mock
+        mock_logger = Mock()
+        mock_get_response = Mock()
+        middleware = AuditLoggingMiddleware(get_response=mock_get_response, logger=mock_logger)
+        mock_request = Mock()
+        mock_request.user.is_authenticated = True
+        mock_request.user.username = 'testuser'
+        mock_request.method = 'GET'
+        mock_request.get_full_path.return_value = '/patients/'
+        response_mock = Mock()
+        mock_get_response.return_value = response_mock
+
+        result = middleware(mock_request)
+
+        mock_logger.info.assert_called_once()
+        log_msg = mock_logger.info.call_args[0][0]
+        print(f"Middleware direct call logged message: {log_msg}")
+        self.assertIn('GET', log_msg)
+        self.assertIn('/patients/', log_msg)
+        self.assertIn('user=testuser', log_msg)
+        self.assertEqual(result, response_mock)
+
+    def test_middleware_logging_direct_call_anonymous(self):
+        from patient.middleware.audit_logging import AuditLoggingMiddleware
+        from unittest.mock import Mock
+        mock_logger = Mock()
+        mock_get_response = Mock()
+        middleware = AuditLoggingMiddleware(get_response=mock_get_response, logger=mock_logger)
+        mock_request = Mock()
+        mock_request.user.is_authenticated = False
+        mock_request.method = 'POST'
+        mock_request.get_full_path.return_value = '/patients/create/'
+        response_mock = Mock()
+        mock_get_response.return_value = response_mock
+
+        result = middleware(mock_request)
+
+        mock_logger.info.assert_called_once()
+        log_msg = mock_logger.info.call_args[0][0]
+        print(f"Middleware direct call logged message (anonymous): {log_msg}")
+        self.assertIn('POST', log_msg)
+        self.assertIn('/patients/create/', log_msg)
+        self.assertIn('anonymous user', log_msg)
+        self.assertEqual(result, response_mock)

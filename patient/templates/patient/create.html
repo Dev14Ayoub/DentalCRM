@@ -140,27 +140,7 @@
                         </div>
 
                         <!-- Initial Note -->
-                        {% if form.initial_note %}
-                        <div class="row mb-4">
-                            <div class="col-12">
-                                <h6 class="text-primary border-bottom pb-2 mb-3">
-                                    <i class="bi bi-journal-text"></i> {% trans "Initial Note" %}
-                                </h6>
-                            </div>
-                            <div class="col-12 mb-3">
-                                <label for="{{ form.initial_note.id_for_label }}" class="form-label">
-                                    {% trans "Initial Note" %}
-                                </label>
-                                {{ form.initial_note }}
-                                {% if form.initial_note.errors %}
-                                <div class="text-danger small">{{ form.initial_note.errors.0 }}</div>
-                                {% endif %}
-                                <div class="form-text">
-                                    {% trans "Add any initial observations or notes about the patient (optional)" %}
-                                </div>
-                            </div>
-                        </div>
-                        {% endif %}
+                        
 
                         <!-- Form Actions -->
                         <div class="d-flex justify-content-between">

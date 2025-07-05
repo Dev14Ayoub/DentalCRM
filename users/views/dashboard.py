@@ -37,17 +37,26 @@ class UserDashboardView(LoginRequiredMixin, View):
         closed_appointments = Appointment.objects.select_related('user', 'procedure').filter(is_completed=True)
 
         if 'Doctor' in roles:
-            # Doctors should not have the right to schedule appointments
-            appointments = appointments.none()
-            closed_appointments = closed_appointments.none()
+            # Doctors should see appointments for their clinic
+            if hasattr(request.user, 'profile') and request.user.profile.clinic:
+                appointments = appointments.filter(user__profile__clinic=request.user.profile.clinic)
+                closed_appointments = closed_appointments.filter(user__profile__clinic=request.user.profile.clinic)
+            else:
+                appointments = appointments.none()
+                closed_appointments = closed_appointments.none()
         elif 'Office Assistant' in roles:
             # Filter appointments for office assistant's clinic
             if hasattr(request.user, 'profile') and request.user.profile.clinic:
                 appointments = appointments.filter(user__profile__clinic=request.user.profile.clinic)
                 closed_appointments = closed_appointments.filter(user__profile__clinic=request.user.profile.clinic)
         elif 'Administrator' in roles:
-            # Administrator sees all appointments
-            pass
+            # Administrator sees appointments for their clinic
+            if hasattr(request.user, 'profile') and request.user.profile.clinic:
+                appointments = appointments.filter(user__profile__clinic=request.user.profile.clinic)
+                closed_appointments = closed_appointments.filter(user__profile__clinic=request.user.profile.clinic)
+            else:
+                # If no clinic, show all
+                pass
         else:
             # Default: show only user's own appointments
             appointments = appointments.filter(user=request.user)

@@ -31,6 +31,7 @@ class UserCreateView(View):
         raise Http404()
 
     def post(self, request):
+        import threading
         POST = request.POST
         FILES = request.FILES
         request.session['register_form_data'] = POST
@@ -58,12 +59,32 @@ class UserCreateView(View):
                     from clinic.models import Clinic
                     clinic_obj, created = Clinic.objects.get_or_create(name=clinic_name)
                     profile.clinic = clinic_obj
-                    # Assign administrator role to user
-                    from administrator.models import Role, UserRole
-                    admin_role = Role.objects.filter(name='administrator').first()
-                    if admin_role:
-                        UserRole.objects.get_or_create(user=user, role=admin_role)
+
             profile.save()
+            # Set user's first_name and last_name from form data
+            user.first_name = form.cleaned_data.get('first_name', '')
+            user.last_name = form.cleaned_data.get('last_name', '')
+            user.username = form.cleaned_data.get('username', user.username)
+            user.set_password(form.cleaned_data.get('password1', ''))
+            user.save()
+
+            # Assign administrator role and permissions synchronously to ensure immediate recognition
+            from administrator.models import Role, UserRole, Permission, RolePermission
+            admin_role = Role.objects.filter(name='administrator').first()
+            if admin_role:
+                UserRole.objects.get_or_create(user=user, role=admin_role)
+                add_patient_permission = Permission.objects.filter(codename='add_patient').first()
+                if add_patient_permission:
+                    RolePermission.objects.get_or_create(role=admin_role, permission=add_patient_permission)
+                # Audit log for user role assignment
+                from administrator.models import AuditLog
+                AuditLog.objects.create(
+                    user=user,
+                    action_type='assign_role',
+                    object_type='UserRole',
+                    description=f"Assigned administrator role to user {user.username}"
+                )
+
             user_created = _(
                 'User has been created, please log in'
             )

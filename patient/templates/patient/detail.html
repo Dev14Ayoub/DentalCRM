@@ -83,15 +83,15 @@
                 </div>
                 <div class="card-body p-2">
                     <div class="d-grid gap-2">
-                        <button class="btn btn-outline-primary" type="button" data-bs-toggle="modal" data-bs-target="#newAppointmentModal">
-                            <i class="bi bi-calendar-plus"></i> {% trans "New Appointment" %}
-                        </button>
-                        <button class="btn btn-outline-success" type="button" data-bs-toggle="modal" data-bs-target="#newPaymentModal">
-                            <i class="bi bi-cash"></i> {% trans "Record Payment" %}
-                        </button>
-                        <button class="btn btn-outline-info" type="button" data-bs-toggle="modal" data-bs-target="#newPrescriptionModal">
-                            <i class="bi bi-file-medical"></i> {% trans "Write Prescription" %}
-                        </button>
+                    <button class="btn btn-primary" type="button" id="toggleAppointmentForm">
+                        <i class="bi bi-calendar-plus"></i> {% trans "New Appointment" %}
+                    </button>
+                    <button class="btn btn-primary" type="button" id="togglePaymentForm">
+                        <i class="bi bi-cash"></i> {% trans "Record Payment" %}
+                    </button>
+                    <button class="btn btn-primary" type="button" id="togglePrescriptionForm">
+                        <i class="bi bi-file-medical"></i> {% trans "Write Prescription" %}
+                    </button>
                     </div>
                 </div>
             </div>
@@ -139,9 +139,43 @@
                 <div class="tab-pane fade show active" id="treatment" role="tabpanel">
                     <div class="d-flex justify-content-between align-items-center mb-3">
                         <h4>{% trans "Treatment Plans" %}</h4>
-                        <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#newTreatmentPlanModal">
+                        <button class="btn btn-primary" type="button" id="toggleNewPlanForm">
                             <i class="bi bi-plus-lg"></i> {% trans "New Plan" %}
                         </button>
+                    </div>
+                    <div id="newPlanForm" class="card mb-3" style="display: none;">
+                        <div class="card-header bg-light">
+                            <h5 class="mb-0">{% trans "Create New Treatment Plan" %}</h5>
+                        </div>
+                        <div class="card-body">
+                            <form method="post" action="{% url 'patient:create_treatment_plan' patient.id %}">
+                                {% csrf_token %}
+                                <div class="mb-3">
+                                    <label for="id_title" class="form-label">{% trans "Title" %}</label>
+                                    <input type="text" name="title" id="id_title" class="form-control" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="id_description" class="form-label">{% trans "Description" %}</label>
+                                    <textarea name="description" id="id_description" rows="3" class="form-control" required></textarea>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="id_estimated_cost" class="form-label">{% trans "Estimated Cost" %}</label>
+                                    <input type="number" name="estimated_cost" id="id_estimated_cost" class="form-control" step="0.01" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="id_insurance_coverage" class="form-label">{% trans "Insurance Coverage" %}</label>
+                                    <input type="number" name="insurance_coverage" id="id_insurance_coverage" class="form-control" step="0.01" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">{% trans "Patient Responsibility" %}</label>
+                                    <div id="patient-responsibility-display" class="fw-bold">$0.00</div>
+                                </div>
+                                <div class="d-flex gap-2">
+                                    <button type="submit" class="btn btn-success">{% trans "Save Plan" %}</button>
+                                    <button type="button" class="btn btn-secondary" id="cancelNewPlanForm">{% trans "Cancel" %}</button>
+                                </div>
+                            </form>
+                        </div>
                     </div>
 
                     {% for plan in treatment_plans %}
@@ -188,7 +222,7 @@
                     {% empty %}
                     <div class="text-center py-4">
                         <div class="mb-3">
-                            <i class="bi bi-clipboard2-x display-4 text-muted"></i>
+                            <i class="bi bi-calendar-x display-4 text-muted"></i>
                         </div>
                         <h5>{% trans "No Treatment Plans Yet" %}</h5>
                         <p class="text-muted">{% trans "Click 'New Plan' to create a treatment plan" %}</p>
@@ -198,21 +232,21 @@
 
                 <!-- Appointments Tab -->
                 <div class="tab-pane fade" id="appointments" role="tabpanel">
-            <div class="d-flex justify-content-between align-items-center mb-3">
-                <h4>{% trans "Appointment History" %}</h4>
-                <button type="button" class="btn btn-primary" id="toggleAppointmentForm">
-                    <i class="bi bi-plus-lg"></i> {% trans "Add History" %}
-                </button>
-                {% if perms.schedule.change_appointment %}
-                <button type="button" class="btn btn-success" id="toggleConfirmBtn" data-appointment-id="{{ appointments.0.id }}">
-                    {% if appointments.0.is_confirmed %}
-                        {% trans "Unconfirm Appointment" %}
-                    {% else %}
-                        {% trans "Confirm Appointment" %}
-                    {% endif %}
-                </button>
-                {% endif %}
-            </div>
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h4>{% trans "Appointment History" %}</h4>
+                        <button type="button" class="btn btn-primary" id="toggleAppointmentForm">
+                            <i class="bi bi-plus-lg"></i> {% trans "Add History" %}
+                        </button>
+                        {% if perms.schedule.change_appointment %}
+                        <button type="button" class="btn btn-success" id="toggleConfirmBtn" data-appointment-id="{{ appointments.0.id }}">
+                            {% if appointments.0.is_confirmed %}
+                                {% trans "Unconfirm Appointment" %}
+                            {% else %}
+                                {% trans "Confirm Appointment" %}
+                            {% endif %}
+                        </button>
+                        {% endif %}
+                    </div>
 
                     <!-- Quick Appointment Form -->
                     <div id="appointmentForm" class="card mb-4" style="display: none;">
@@ -251,165 +285,77 @@
 
                     <!-- Appointments List -->
                     <div class="accordion" id="appointmentHistoryAccordion">
-                        {% for appointment in appointments %}
-                        <div class="accordion-item">
-                            <h2 class="accordion-header">
-                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" 
-                                        data-bs-target="#appointment{{ appointment.id }}">
-                                    <div class="d-flex w-100 justify-content-between align-items-center">
-                                        <div>
-                                            <strong>{{ appointment.date|date:"M d, Y" }}</strong>
-                                            {% if appointment.time %}
-                                            <span class="text-muted ms-2">{{ appointment.time|time:"H:i" }}</span>
-                                            {% endif %}
-                                        </div>
-                                        <span class="badge {% if appointment.status == 'completed' %}bg-success{% elif appointment.status == 'cancelled' %}bg-danger{% else %}bg-primary{% endif %} ms-2">
-                                            {{ appointment.get_status_display }}
-                                        </span>
-                                    </div>
-                                </button>
-                            </h2>
-                            <div id="appointment{{ appointment.id }}" class="accordion-collapse collapse">
-                                <div class="accordion-body">
-                                    {% if appointment.photos.exists %}
-                                    <h6>{% trans "Photos" %}</h6>
-                                    <div class="appointment-photos mb-3">
-                                        <div class="photos-scroll">
-                                            {% for photo in appointment.photos.all %}
-                                            <div class="photo-item">
-                                                <img src="{{ photo.photo.url }}" alt="{% trans 'Treatment Photo' %}" 
-                                                     class="img-thumbnail" data-bs-toggle="modal" 
-                                                     data-bs-target="#photoModal{{ photo.id }}">
-                                                <button type="button" class="btn btn-sm btn-danger delete-photo" 
-                                                        data-photo-id="{{ photo.id }}">
-                                                    <i class="bi bi-trash"></i>
-                                                </button>
-                                            </div>
-                                            
-                                            <!-- Photo Modal -->
-                                            <div class="modal fade" id="photoModal{{ photo.id }}" tabindex="-1">
-                                                <div class="modal-dialog modal-lg">
-                                                    <div class="modal-content">
-                                                        <div class="modal-header">
-                                                            <h5 class="modal-title">{% trans "Treatment Photo" %}</h5>
-                                                            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                                                        </div>
-                                                        <div class="modal-body text-center">
-                                                            <img src="{{ photo.photo.url }}" alt="{% trans 'Treatment Photo' %}" 
-                                                                 class="img-fluid rounded">
-                                                            {% if photo.caption %}
-                                                            <p class="mt-2">{{ photo.caption }}</p>
-                                                            {% endif %}
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            {% endfor %}
-                                        </div>
-                                    </div>
-                                    {% endif %}
-
-                                    {% if appointment.patient_notes.exists %}
-                                    <h6>{% trans "Notes" %}</h6>
-                                    <ul class="list-unstyled">
-                                        {% for note in appointment.patient_notes.all %}
-                                        <li class="mb-2">
-                                            <div class="d-flex">
-                                                {% if note.doctor %}
-                                                <div class="avatar-xs me-2">
-                                                    <span>{{ note.doctor.first_name|slice:":1" }}</span>
-                                                </div>
+                        {% if appointments %}
+                            {% for appointment in appointments %}
+                            <div class="accordion-item">
+                                <h2 class="accordion-header">
+                                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" 
+                                            data-bs-target="#appointment{{ appointment.id }}">
+                                        <div class="d-flex w-100 justify-content-between align-items-center">
+                                            <div>
+                                                <strong>{{ appointment.date|date:"M d, Y" }}</strong>
+                                                {% if appointment.time %}
+                                                <span class="text-muted ms-2">{{ appointment.time|time:"H:i" }}</span>
                                                 {% endif %}
-                                                <div>
-                                                    {{ note.note }}
-                                                    <div class="text-muted small">
-                                                        {% if note.doctor %}
-                                                        {{ note.doctor.full_name }} -
-                                                        {% endif %}
-                                                        {{ note.created_at|date:"M d, Y H:i" }}
-                                                    </div>
-                                                </div>
                                             </div>
-                                        </li>
-                                        {% endfor %}
-                                    </ul>
-                                    {% endif %}
-
-                                    {% if appointment.prescriptions.exists %}
-                                    <h6>{% trans "Prescriptions" %}</h6>
-                                    <ul class="list-unstyled">
-                                        {% for prescription in appointment.prescriptions.all %}
-                                        <li class="mb-2">
-                                            <div class="card">
-                                                <div class="card-body">
-                                                    <h6 class="card-title">{{ prescription.medication }}</h6>
-                                                    <p class="card-text">
-                                                        <strong>{% trans "Dosage" %}:</strong> {{ prescription.dosage }}<br>
-                                                        <strong>{% trans "Instructions" %}:</strong> {{ prescription.instructions }}
-                                                    </p>
-                                                    <div class="text-muted small">
-                                                        {% trans "Prescribed by" %} {{ prescription.doctor }} 
-                                                        {% trans "on" %} {{ prescription.prescribed_date|date:"M d, Y" }}
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </li>
-                                        {% endfor %}
-                                    </ul>
-                                    {% endif %}
-
-                                    <div class="mt-3">
-                                        <button class="btn btn-outline-primary btn-sm" data-bs-toggle="modal" 
-                                                data-bs-target="#addPhotoModal{{ appointment.id }}">
-                                            <i class="bi bi-camera"></i> {% trans "Add Photo" %}
-                                        </button>
-                                        <button class="btn btn-outline-secondary btn-sm" data-bs-toggle="modal" 
-                                                data-bs-target="#addNoteModal{{ appointment.id }}">
-                                            <i class="bi bi-pencil"></i> {% trans "Add Note" %}
-                                        </button>
-                                    </div>
+                                            <span class="badge {% if appointment.status == 'completed' %}bg-success{% elif appointment.status == 'cancelled' %}bg-danger{% else %}bg-primary{% endif %} ms-2">
+                                                {{ appointment.get_status_display }}
+                                            </span>
+                                        </div>
+                                    </button>
+                                </h2>
+                                <div id="appointment{{ appointment.id }}" class="accordion-collapse collapse">
+                                <div class="accordion-body">
+                                    {# {% if appointment.photos.exists %} #}
+                                    {# <h6>{% trans "Photos" %}</h6> #}
+                                    {# <div class="appointment-photos mb-3"> #}
+                                    {#     <div class="photos-scroll"> #}
+                                    {#         {% for photo in appointment.photos.all %} #}
+                                    {#         <div class="photo-item"> #}
+                                    {#             <img src="{{ photo.photo.url }}" alt="{% trans 'Treatment Photo' %}"  #}
+                                    {#                  class="img-thumbnail" data-bs-toggle="modal"  #}
+                                    {#                  data-bs-target="#photoModal{{ photo.id }}"> #}
+                                    {#             <button type="button" class="btn btn-sm btn-danger delete-photo"  #}
+                                    {#                     data-photo-id="{{ photo.id }}"> #}
+                                    {#                 <i class="bi bi-trash"></i> #}
+                                    {#             </button> #}
+                                    {#         </div> #}
+                                    {#         <!-- Photo Modal --> #}
+                                    {#         <div class="modal fade" id="photoModal{{ photo.id }}" tabindex="-1"> #}
+                                    {#             <div class="modal-dialog modal-lg"> #}
+                                    {#                 <div class="modal-content"> #}
+                                    {#                     <div class="modal-header"> #}
+                                    {#                         <h5 class="modal-title">{% trans "Treatment Photo" %}</h5> #}
+                                    {#                         <button type="button" class="btn-close" data-bs-dismiss="modal"></button> #}
+                                    {#                     </div> #}
+                                    {#                     <div class="modal-body text-center"> #}
+                                    {#                         <img src="{{ photo.photo.url }}" alt="{% trans 'Treatment Photo' %}"  #}
+                                    {#                              class="img-fluid rounded"> #}
+                                    {#                         {% if photo.caption %} #}
+                                    {#                         <p class="mt-2">{{ photo.caption }}</p> #}
+                                    {#                         {% endif %} #}
+                                    {#                     </div> #}
+                                    {#                 </div> #}
+                                    {#             </div> #}
+                                    {#         </div> #}
+                                    {#         {% endfor %} #}
+                                    {#     </div> #}
+                                    {# </div> #}
+                                    {# {% endif %} #}
                                 </div>
-                            </div>
-                        </div>
-                        {% empty %}
-                        <div class="text-center py-4">
-                            <div class="mb-3">
-                                <i class="bi bi-calendar-x display-4 text-muted"></i>
-                            </div>
-                            <h5>{% trans "No Appointments Yet" %}</h5>
-                            <p class="text-muted">{% trans "Click 'Add History' to record an appointment" %}</p>
-                        </div>
-                        {% endfor %}
-                    </div>
-                </div>
-
-                <!-- Photos Tab -->
-                <div class="tab-pane fade" id="photos" role="tabpanel">
-                    <div class="row g-3">
-                        {% for appointment in appointments %}
-                            {% for photo in appointment.photos.all %}
-                            <div class="col-md-3 col-sm-4 col-6">
-                                <div class="card h-100">
-                                    <img src="{{ photo.photo.url }}" class="card-img-top" alt="Treatment Photo"
-                                         style="height: 200px; object-fit: cover; cursor: pointer;"
-                                         data-bs-toggle="modal" data-bs-target="#photoModal{{ photo.id }}">
-                                    <div class="card-body p-2">
-                                        <p class="small text-muted mb-0">
-                                            {{ appointment.date|date:"M d, Y" }}
-                                        </p>
-                                    </div>
                                 </div>
-                            </div>
                             {% endfor %}
-                        {% empty %}
-                        <div class="col-12 text-center py-4">
-                            <div class="mb-3">
-                                <i class="bi bi-images display-4 text-muted"></i>
+                        {% else %}
+                            <div class="text-center py-4">
+                                <div class="mb-3">
+                                    <i class="bi bi-calendar-x display-4 text-muted"></i>
+                                </div>
+                                <h5>{% trans "No Appointments Yet" %}</h5>
+                                <p class="text-muted">{% trans "Click 'Add History' to record an appointment" %}</p>
                             </div>
-                            <h5>{% trans "No Photos Yet" %}</h5>
-                            <p class="text-muted">{% trans "Photos will appear here when added to appointments" %}</p>
-                        </div>
-                        {% endfor %}
+                        {% endif %}
+
+                                                    
                     </div>
                 </div>
 
@@ -417,7 +363,324 @@
                 <div class="tab-pane fade" id="prescriptions" role="tabpanel">
                     <div class="d-flex justify-content-between align-items-center mb-3">
                         <h4>{% trans "Prescriptions" %}</h4>
-                        <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#newPrescriptionModal">
+                        <button class="btn btn-primary" type="button" id="togglePrescriptionFormTab">
+                            <i class="bi bi-plus-lg"></i> {% trans "New Prescription" %} 
+                        </button>
+                    </div>
+
+                    <!-- Quick Prescription Form -->
+                    <div id="prescriptionForm" class="card mb-4" style="display: none;">
+                        <div class="card-header bg-light">
+                            <h5 class="mb-0">{% trans "Write Prescription" %}</h5>
+                        </div>
+                        <div class="card-body">
+                            <form method="post" action="{% url 'patient:create_prescription' patient.id %}">
+                                {% csrf_token %}
+                                <div class="mb-3">
+                                    <label for="id_medication" class="form-label">{% trans "Medication" %}</label>
+                                    <input type="text" name="medication" id="id_medication" class="form-control" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="id_dosage" class="form-label">{% trans "Dosage" %}</label>
+                                    <input type="text" name="dosage" id="id_dosage" class="form-control" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="id_instructions" class="form-label">{% trans "Instructions" %}</label>
+                                    <textarea name="instructions" id="id_instructions" rows="3" class="form-control" required></textarea>
+                                </div>
+                                <div class="d-flex gap-2">
+                                    <button type="submit" class="btn btn-success">{% trans "Save Prescription" %}</button>
+                                    <button type="button" class="btn btn-secondary" id="cancelPrescriptionForm">{% trans "Cancel" %}</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+
+                    <div class="row g-3">
+                        {% for prescription in prescriptions %}
+                        <div class="col-md-6">
+                            <div class="card h-100">
+                                <div class="card-body">
+                                    <h5 class="card-title">{{ prescription.medication }}</h5>
+                                    <h6 class="card-subtitle mb-2 text-muted">{{ prescription.dosage }}</h6>
+                                    <p class="card-text">{{ prescription.instructions }}</p>
+                                    <div class="text-muted small">
+                                        {% trans "Prescribed by" %} {{ prescription.doctor }}<br>
+                                        {% trans "Date" %}: {{ prescription.prescribed_date|date:"M d, Y" }}
+                                        {% if prescription.valid_until %}
+                                        <br>{% trans "Valid until" %}: {{ prescription.valid_until|date:"M d, Y" }}
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        {% empty %}
+                        <div class="col-12 text-center py-4">
+                            <div class="mb-3">
+                                <i class="bi bi-file-medical display-4 text-muted"></i>
+                            </div>
+                            <h5>{% trans "No Prescriptions Yet" %}</h5>
+                            <p class="text-muted">{% trans "Click 'New Prescription' to write a prescription" %}</p>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <!-- Payments Tab -->
+                <div class="tab-pane fade" id="payments" role="tabpanel">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h4>{% trans "Payment History" %}</h4>
+                        <button class="btn btn-primary" type="button" id="togglePaymentFormTab">
+                            <i class="bi bi-plus-lg"></i> {% trans "Record Payment" %} 
+                        </button>
+                    </div>
+
+                    <!-- Quick Payment Form -->
+                    <div id="paymentForm" class="card mb-4" style="display: none;">
+                        <div class="card-header bg-light">
+                            <h5 class="mb-0">{% trans "Record Payment" %}</h5>
+                        </div>
+                        <div class="card-body">
+                            <form method="post" action="{% url 'patient:create_payment' patient.id %}">
+                                {% csrf_token %}
+                                <div class="mb-3">
+                                    <label for="id_payment_method" class="form-label">{% trans "Payment Method" %}</label>
+                                    <select name="payment_method" id="id_payment_method" class="form-select" required>
+                                        <option value="">{% trans "Select Payment Method" %}</option>
+                                        <option value="cash">{% trans "Cash" %}</option>
+                                        <option value="credit_card">{% trans "Credit Card" %}</option>
+                                        <option value="insurance">{% trans "Insurance" %}</option>
+                                    </select>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="id_amount" class="form-label">{% trans "Amount" %}</label>
+                                    <input type="number" name="amount" id="id_amount" class="form-control" step="0.01" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="id_payment_notes" class="form-label">{% trans "Notes (optional)" %}</label>
+                                    <textarea name="notes" id="id_payment_notes" rows="3" class="form-control" placeholder="{% trans 'Any additional notes about this payment' %}"></textarea>
+                                </div>
+                                <div class="d-flex gap-2">
+                                    <button type="submit" class="btn btn-success">{% trans "Save Payment" %}</button>
+                                    <button type="button" class="btn btn-secondary" id="cancelPaymentForm">{% trans "Cancel" %}</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>{% trans "Date" %}</th>
+                                    <th>{% trans "Amount" %}</th>
+                                    <th>{% trans "Method" %}</th>
+                                    <th>{% trans "Treatment Plan" %}</th>
+                                    <th>{% trans "Status" %}</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for payment in payments %}
+                                <tr>
+                                    <td>{{ payment.payment_date|date:"M d, Y" }}</td>
+                                    <td>${{ payment.amount|floatformat:2 }}</td>
+                                    <td>{{ payment.get_payment_method_display }}</td>
+                                    <td>
+                                        {% if payment.treatment_plan %} 
+                                        {{ payment.treatment_plan.title }}
+                                        {% else %}
+                                        -
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        <span class="badge {% if payment.status == 'completed' %}bg-success{% elif payment.status == 'pending' %}bg-warning{% else %}bg-danger{% endif %}">
+                                            {{ payment.get_status_display }}
+                                        </span>
+                                    </td>
+                                </tr>
+                                {% empty %}
+                                <tr>
+                                    <td colspan="5" class="text-center py-4">
+                                        <div class="mb-3">
+                                            <i class="bi bi-cash-stack display-4 text-muted"></i>
+                                        </div>
+                                        <h5>{% trans "No Payments Yet" %}</h5>
+                                        <p class="text-muted">{% trans "Click 'Record Payment' to add a payment" %}</p>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Appointments Tab -->
+                <div class="tab-pane fade" id="appointments" role="tabpanel">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h4>{% trans "Appointment History" %}</h4>
+                        <button type="button" class="btn btn-primary" id="toggleAppointmentForm">
+                            <i class="bi bi-plus-lg"></i> {% trans "Add History" %}
+                        </button>
+                        {% if perms.schedule.change_appointment %}
+                        <button type="button" class="btn btn-success" id="toggleConfirmBtn" data-appointment-id="{{ appointments.0.id }}">
+                            {% if appointments.0.is_confirmed %}
+                                {% trans "Unconfirm Appointment" %}
+                            {% else %}
+                                {% trans "Confirm Appointment" %}
+                            {% endif %}
+                        </button>
+                        {% endif %}
+                    </div>
+
+                    <!-- Quick Appointment Form -->
+                    <div id="appointmentForm" class="card mb-4" style="display: none;">
+                        <div class="card-header bg-light">
+                            <h5 class="mb-0">{% trans "Add Appointment History" %}</h5>
+                        </div>
+                        <div class="card-body">
+                            <form method="post" enctype="multipart/form-data" action="{% url 'patient:create_appointment' patient.id %}">
+                                {% csrf_token %}
+                                <input type="hidden" name="quick_appointment" value="1">
+                                <div class="mb-3">
+                                    <label for="id_date" class="form-label">{% trans "Appointment Date" %}</label>
+                                    <input type="date" name="date" id="id_date" class="form-control" required>
+                                    <div class="form-text">{% trans "This date will be used as the title for this appointment history" %}</div>
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <label for="appointment_photos" class="form-label">{% trans "Treatment Photos" %}</label>
+                                    <input type="file" name="photos" id="appointment_photos" class="form-control" multiple accept="image/*">
+                                    <div class="form-text">{% trans "You can select multiple photos (optional)" %}</div>
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <label for="appointment_note" class="form-label">{% trans "Notes" %}</label>
+                                    <textarea name="note" id="appointment_note" rows="3" class="form-control" placeholder="{% trans 'Add notes about this appointment...' %}"></textarea>
+                                    <div class="form-text">{% trans "Add any notes or observations (optional)" %}</div>
+                                </div>
+                                
+                                <div class="d-flex gap-2">
+                                    <button type="submit" class="btn btn-success">{% trans "Save Appointment" %}</button>
+                                    <button type="button" class="btn btn-secondary" id="cancelAppointmentForm">{% trans "Cancel" %}</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+
+                    <!-- Appointments List -->
+                    <div class="accordion" id="appointmentHistoryAccordion">
+                        {% if appointments %}
+                            {% for appointment in appointments %}
+                            <div class="accordion-item">
+                                <h2 class="accordion-header">
+                                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" 
+                                            data-bs-target="#appointment{{ appointment.id }}">
+                                        <div class="d-flex w-100 justify-content-between align-items-center">
+                                            <div>
+                                                <strong>{{ appointment.date|date:"M d, Y" }}</strong>
+                                                {% if appointment.time %}
+                                                <span class="text-muted ms-2">{{ appointment.time|time:"H:i" }}</span>
+                                                {% endif %}
+                                            </div>
+                                            <span class="badge {% if appointment.status == 'completed' %}bg-success{% elif appointment.status == 'cancelled' %}bg-danger{% else %}bg-primary{% endif %} ms-2">
+                                                {{ appointment.get_status_display }}
+                                            </span>
+                                        </div>
+                                    </button>
+                                </h2>
+                                <div id="appointment{{ appointment.id }}" class="accordion-collapse collapse">
+                                <div class="accordion-body">
+                                    {# {% if appointment.photos.exists %} #}
+                                        <h6>{% trans "Photos" %}</h6>
+                                        <div class="appointment-photos mb-3">
+                                            <div class="photos-scroll">
+                                                {% for photo in appointment.photos.all %}
+                                                <div class="photo-item">
+                                                    <img src="{{ photo.photo.url }}" alt="{% trans 'Treatment Photo' %}" 
+                                                         class="img-thumbnail" data-bs-toggle="modal" 
+                                                         data-bs-target="#photoModal{{ photo.id }}">
+                                                    <button type="button" class="btn btn-sm btn-danger delete-photo" 
+                                                            data-photo-id="{{ photo.id }}">
+                                                        <i class="bi bi-trash"></i>
+                                                    </button>
+                                                </div>
+                                                
+                                                <!-- Photo Modal -->
+                                                <div class="modal fade" id="photoModal{{ photo.id }}" tabindex="-1">
+                                                    <div class="modal-dialog modal-lg">
+                                                        <div class="modal-content">
+                                                            <div class="modal-header">
+                                                                <h5 class="modal-title">{% trans "Treatment Photo" %}</h5>
+                                                                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                                            </div>
+                                                            <div class="modal-body text-center">
+                                                                <img src="{{ photo.photo.url }}" alt="{% trans 'Treatment Photo' %}" 
+                                                                     class="img-fluid rounded">
+                                                                {% if photo.caption %}
+                                                                <p class="mt-2">{{ photo.caption }}</p>
+                                                                {% endif %}
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                {% endfor %}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        {% else %}
+                            <div class="text-center py-4">
+                                <div class="mb-3">
+                                    <i class="bi bi-calendar-x display-4 text-muted"></i>
+                                </div>
+                                <h5>{% trans "No Appointments Yet" %}</h5>
+                                <p class="text-muted">{% trans "Click 'Add History' to record an appointment" %}</p>
+                            </div>
+                        {% endif %}
+
+                                    
+                    </div>
+                </div>
+
+                <!-- Photos Tab -->
+                <div class="tab-pane fade" id="photos" role="tabpanel">
+                    <div class="row g-3">
+                        {% if appointments %}
+                            {% for appointment in appointments %}
+                                {% if appointment.photos.exists %}
+                                    {% for photo in appointment.photos.all %}
+                                    <div class="col-md-3 col-sm-4 col-6">
+                                        <div class="card h-100">
+                                            <img src="{{ photo.photo.url }}" class="card-img-top" alt="Treatment Photo"
+                                                 style="height: 200px; object-fit: cover; cursor: pointer;"
+                                                 data-bs-toggle="modal" data-bs-target="#photoModal{{ photo.id }}">
+                                            <div class="card-body p-2">
+                                                <p class="small text-muted mb-0">
+                                                    {{ appointment.date|date:"M d, Y" }}
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    {% endfor %}
+                                {% endif %}
+                            {% endfor %}
+                        {% else %}
+                        <div class="col-12 text-center py-4">
+                            <div class="mb-3">
+                                <i class="bi bi-images display-4 text-muted"></i>
+                            </div>
+                            <h5>{% trans "No Photos Yet" %}</h5>
+                            <p class="text-muted">{% trans "No treatment photos available" %}</p>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <!-- Prescriptions Tab -->
+                <div class="tab-pane fade" id="prescriptions" role="tabpanel">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h4>{% trans "Prescriptions" %}</h4>
+                        <button class="btn btn-primary" type="button" id="togglePrescriptionFormTab">
                             <i class="bi bi-plus-lg"></i> {% trans "New Prescription" %}
                         </button>
                     </div>
@@ -456,7 +719,7 @@
                 <div class="tab-pane fade" id="payments" role="tabpanel">
                     <div class="d-flex justify-content-between align-items-center mb-3">
                         <h4>{% trans "Payment History" %}</h4>
-                        <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#newPaymentModal">
+                        <button class="btn btn-primary" type="button" id="togglePaymentFormTab">
                             <i class="bi bi-plus-lg"></i> {% trans "Record Payment" %}
                         </button>
                     </div>
@@ -511,9 +774,27 @@
                 <div class="tab-pane fade" id="notes" role="tabpanel">
                     <div class="d-flex justify-content-between align-items-center mb-3">
                         <h4>{% trans "Notes" %}</h4>
-                        <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#newNoteModal">
+                        <button class="btn btn-primary" type="button" id="toggleNoteForm">
                             <i class="bi bi-plus-lg"></i> {% trans "Add Note" %}
                         </button>
+                    </div>
+                    <div id="noteForm" class="card mb-4" style="display: none;">
+                        <div class="card-header bg-light">
+                            <h5 class="mb-0">{% trans "Add New Note" %}</h5>
+                        </div>
+                        <div class="card-body">
+                            <form method="post" action="{% url 'patient:add_patient_note' patient.id %}">
+                                {% csrf_token %}
+                                <div class="mb-3">
+                                    <label for="id_note" class="form-label">{% trans "Note" %}</label>
+                                    <textarea name="note" id="id_note" rows="4" class="form-control" required></textarea>
+                                </div>
+                                <div class="d-flex gap-2">
+                                    <button type="submit" class="btn btn-success">{% trans "Save Note" %}</button>
+                                    <button type="button" class="btn btn-secondary" id="cancelNoteForm">{% trans "Cancel" %}</button>
+                                </div>
+                            </form>
+                        </div>
                     </div>
 
                     <div class="timeline">
@@ -556,9 +837,7 @@
 <!-- Modals -->
 {% include "patient/modals/treatment_plan_modal.html" %}
 {% include "patient/modals/appointment_modal.html" %}
-{% include "patient/modals/payment_modal.html" %}
-{% include "patient/modals/prescription_modal.html" %}
-{% include "patient/modals/note_modal.html" %}
+{% comment %} Removed payment, prescription, and note modals to avoid popup behavior as per user request {% endcomment %}
 
 {% endblock %}
 
@@ -735,20 +1014,74 @@
 {% endblock %}
 
 {% block extra_js %}
+<script src="{% static 'patient/js/modal_detailed_debug.js' %}"></script>
+<script src="{% static 'patient/js/modal_fix.js' %}"></script>
 <script>
 $(document).ready(function() {
     // Initialize date field with today's date
     const today = new Date().toISOString().split('T')[0];
     $('#id_date').val(today);
 
-    // Toggle appointment form
-    $('#toggleAppointmentForm').click(function() {
+    // Use delegated event handlers for dynamically loaded elements
+    $(document).on('click', '#toggleAppointmentForm', function() {
+        console.log('toggleAppointmentForm clicked');
         $('#appointmentForm').slideToggle();
     });
 
-    // Cancel appointment form
-    $('#cancelAppointmentForm').click(function() {
+    $(document).on('click', '#cancelAppointmentForm', function() {
+        console.log('cancelAppointmentForm clicked');
         $('#appointmentForm').slideUp();
+    });
+
+    $(document).on('click', '#togglePaymentForm', function() {
+        console.log('togglePaymentForm clicked');
+        $('#paymentForm').slideToggle();
+    });
+
+    $(document).on('click', '#togglePaymentFormTab', function() {
+        console.log('togglePaymentFormTab clicked');
+        $('#paymentForm').slideToggle();
+    });
+
+    $(document).on('click', '#cancelPaymentForm', function() {
+        console.log('cancelPaymentForm clicked');
+        $('#paymentForm').slideUp();
+    });
+
+    $(document).on('click', '#togglePrescriptionForm', function() {
+        console.log('togglePrescriptionForm clicked');
+        $('#prescriptionForm').slideToggle();
+    });
+
+    $(document).on('click', '#togglePrescriptionFormTab', function() {
+        console.log('togglePrescriptionFormTab clicked');
+        $('#prescriptionForm').slideToggle();
+    });
+
+    $(document).on('click', '#cancelPrescriptionForm', function() {
+        console.log('cancelPrescriptionForm clicked');
+        $('#prescriptionForm').slideUp();
+    });
+
+    $(document).on('click', '#toggleNewPlanForm', function() {
+        console.log('toggleNewPlanForm clicked');
+        $('#newPlanForm').slideToggle();
+    });
+
+    $(document).on('click', '#cancelNewPlanForm', function() {
+        console.log('cancelNewPlanForm clicked');
+        $('#newPlanForm').slideUp();
+    });
+
+    // Toggle Note Form
+    $(document).on('click', '#toggleNoteForm', function() {
+        console.log('toggleNoteForm clicked');
+        $('#noteForm').slideToggle();
+    });
+
+    $(document).on('click', '#cancelNoteForm', function() {
+        console.log('cancelNoteForm clicked');
+        $('#noteForm').slideUp();
     });
 
     // Delete photo functionality
@@ -804,6 +1137,18 @@ $(document).ready(function() {
     // Store original button text
     $('button[type="submit"]').each(function() {
         $(this).data('original-text', $(this).html());
+    });
+
+    // Log Bootstrap tab show events and check tab pane visibility
+    var triggerTabList = [].slice.call(document.querySelectorAll('#patientTabs button[data-bs-toggle="tab"]'))
+    triggerTabList.forEach(function (triggerEl) {
+      triggerEl.addEventListener('shown.bs.tab', function (event) {
+        console.log('Tab switched to:', event.target.id);
+        // Log visibility of all tab panes
+        document.querySelectorAll('.tab-pane').forEach(function(pane) {
+          console.log(pane.id + ' visible:', pane.classList.contains('show') && pane.classList.contains('active'));
+        });
+      });
     });
 });
 </script>

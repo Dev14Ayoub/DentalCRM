@@ -15,6 +15,7 @@ class Profile(models.Model):
     photo = models.ImageField(upload_to='profile_photos/', blank=True, null=True)
     special_id = models.CharField(max_length=10, unique=True, blank=True, null=True, editable=False)
     clinic = models.ForeignKey(Clinic, on_delete=models.SET_NULL, null=True, blank=True, related_name='administrators')
+    must_change_password = models.BooleanField(default=True)
 
     def save(self, *args, **kwargs):
         if not self.special_id:

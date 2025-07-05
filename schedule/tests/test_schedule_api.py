@@ -30,7 +30,7 @@ class ScheduleAPIMixin(AppointmentMixin, UserMixin, TestAssertionsMixin):
         from datetime import date, timedelta, datetime, time as dt_time
 
         procedure = Procedure.objects.first()
-        doctor = Doctor.objects.filter(is_active=True).first()
+        doctor = Doctor.objects.first()
         if not procedure or not doctor:
             raise Exception("Procedure or Doctor not found in DB")
 
@@ -63,11 +63,10 @@ class ScheduleAPITest(APITestCase, ScheduleAPIMixin):
                 description_pt='Descrição do procedimento de teste',
                 price=100.00,
             )
-        if not Doctor.objects.filter(is_active=True).exists():
+        if not Doctor.objects.exists():
             Doctor.objects.create(
                 first_name='Test',
                 last_name='Doctor',
-                is_active=True,
             )
 
     def test_schedule_api_returns_status_code_401_if_not_authenticated(self):

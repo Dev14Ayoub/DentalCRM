@@ -19,16 +19,16 @@
                     <thead class="table-light">
                         <tr>
                             <th>{% trans "ID" %}</th>
+                            <th>{% trans "Profile" %}</th>
                             <th>{% trans "Name" %}</th>
                             <th>{% trans "Specialization" %}</th>
                             <th>{% trans "Contact" %}</th>
-                            <th>{% trans "Status" %}</th>
                             <th>{% trans "Actions" %}</th>
                         </tr>
                     </thead>
                     <tbody>
                         {% for doctor in doctors %}
-                        <tr class="{% if doctor.is_active %}table-success{% endif %}">
+                        <tr>
                             <td><code>{{ doctor.id }}</code></td>
                             <td>
                                 {% if doctor.profile_photo %}
@@ -37,16 +37,13 @@
                                     <span class="text-muted">{% trans "No Photo" %}</span>
                                 {% endif %}
                             </td>
-                            <td>{{ doctor.full_name }}</td>
+                            <td>
+                                {{ doctor.full_name }}
+                            </td>
                             <td>{{ doctor.get_specialization_display }}</td>
                             <td>
                                 <div>{{ doctor.email }}</div>
                                 <small class="text-muted">{{ doctor.phone }}</small>
-                            </td>
-                            <td>
-                                <span class="badge {% if doctor.is_active %}bg-success{% else %}bg-danger{% endif %}">
-                                    {% if doctor.is_active %}{% trans "Active" %}{% else %}{% trans "Inactive" %}{% endif %}
-                                </span>
                             </td>
                             <td>
                                 <div class="btn-group">
@@ -76,7 +73,7 @@
                         </tr>
                         {% empty %}
                         <tr>
-                            <td colspan="6" class="text-center">{% trans "No doctors found" %}</td>
+                            <td colspan="5" class="text-center">{% trans "No doctors found" %}</td>
                         </tr>
                         {% endfor %}
                     </tbody>

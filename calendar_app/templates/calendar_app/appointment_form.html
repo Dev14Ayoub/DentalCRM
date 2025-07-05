@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>{% if object %}Edit{% else %}Create{% endif %} Appointment</h1>
+<form method="post">
+  {% csrf_token %}
+  {{ form.as_p }}
+  <button type="submit">Save</button>
+</form>
+<a href="{% url 'calendar_app:appointment_list' %}">Back to Appointments</a>
+{% endblock %}

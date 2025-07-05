@@ -21,6 +21,9 @@ from django.db.models import Sum, Count, Q
 from datetime import date, timedelta
 from django.core.exceptions import PermissionDenied
 
+# Import Role and UserRole for administrator role check
+from administrator.models import Role, UserRole
+
 class PatientListView(LoginRequiredMixin, ListView):
     model = Patient
     template_name = 'patient/list.html'
@@ -38,7 +41,11 @@ class PatientListView(LoginRequiredMixin, ListView):
         user = self.request.user
         # If user is superuser or staff, show all patients of the clinic
         if user.is_superuser or user.is_staff:
-            queryset = Patient.objects.filter(clinic=user.clinic).order_by('-created_at')
+            # Check if user has clinic attribute
+            if hasattr(user, 'clinic'):
+                queryset = Patient.objects.filter(clinic=user.clinic).order_by('-created_at')
+            else:
+                queryset = Patient.objects.all().order_by('-created_at')
         elif hasattr(user, 'doctor'):
             # Doctor sees patients created by them or assigned as primary doctor
             queryset = Patient.objects.filter(
@@ -89,8 +96,20 @@ class PatientCreateView(LoginRequiredMixin, PermissionRequiredMixin, CreateView)
         else:
             return Patient.objects.filter(created_by=user)
 
+    def get_form(self, form_class=None):
+        form = super().get_form(form_class)
+        user = self.request.user
+        # Remove primary_doctor field for doctors
+        if hasattr(user, 'doctor'):
+            if 'primary_doctor' in form.fields:
+                form.fields.pop('primary_doctor')
+        return form
+
     def form_valid(self, form):
         form.instance.created_by = self.request.user
+        # If user is doctor, assign primary_doctor automatically
+        if hasattr(self.request.user, 'doctor'):
+            form.instance.primary_doctor = self.request.user.doctor
         messages.success(self.request, 'Patient created successfully!')
         return super().form_valid(form)
 
@@ -110,7 +129,10 @@ class PatientUpdateView(LoginRequiredMixin, PermissionRequiredMixin, UpdateView)
     def get_queryset(self):
         user = self.request.user
         if user.is_superuser or user.is_staff:
-            return Patient.objects.filter(clinic=user.clinic)
+            if hasattr(user, 'clinic'):
+                return Patient.objects.filter(clinic=user.clinic)
+            else:
+                return Patient.objects.all()
         elif hasattr(user, 'doctor'):
             return Patient.objects.filter(created_by=user)
         else:
@@ -130,16 +152,35 @@ class PatientDetailView(LoginRequiredMixin, DetailView):
         patient = self.get_object()
 
         user = self.request.user
-        # Check if user is office assistant
+        # Check user groups
         is_office_assistant = user.groups.filter(name='Office Assistant').exists()
+        is_doctor = hasattr(user, 'doctor')
+        is_admin = user.is_superuser or user.is_staff
 
         # Get all related data
-        context['treatment_plans'] = patient.treatment_plans.all().order_by('-created_at')
-        if is_office_assistant:
-            # Office assistant sees only appointment dates (past appointments)
-            context['appointments'] = patient.appointments.filter(date__lt=date.today()).order_by('-date')
+        treatment_plans_qs = patient.treatment_plans.all().order_by('-created_at')
+
+        if is_admin:
+            # Admin sees all appointments
+            appointments_qs = patient.appointments.prefetch_related('photos', 'patient_notes').order_by('-date', '-time')
+        elif is_doctor:
+            # Doctor sees only appointments of their own patients
+            if patient.primary_doctor and patient.primary_doctor.user == user:
+                appointments_qs = patient.appointments.prefetch_related('photos', 'patient_notes').order_by('-date', '-time')
+            else:
+                appointments_qs = patient.appointments.none()
+        elif is_office_assistant:
+            # Office assistant sees only past appointments
+            appointments_qs = patient.appointments.filter(date__lt=date.today()).order_by('-date')
         else:
-            context['appointments'] = patient.appointments.prefetch_related('photos', 'patient_notes').order_by('-date', '-time')
+            # Default to no appointments
+            appointments_qs = patient.appointments.none()
+
+        print(f"[DEBUG] PatientDetailView: treatment_plans count = {treatment_plans_qs.count()}")
+        print(f"[DEBUG] PatientDetailView: appointments count = {appointments_qs.count()}")
+
+        context['treatment_plans'] = treatment_plans_qs
+        context['appointments'] = appointments_qs
         context['notes'] = patient.notes.order_by('-created_at')
         context['payments'] = patient.payments.order_by('-payment_date')
         context['prescriptions'] = patient.prescriptions.order_by('-prescribed_date')
@@ -177,7 +218,10 @@ class PatientDeleteView(LoginRequiredMixin, PermissionRequiredMixin, DeleteView)
 
     def get_queryset(self):
         if self.request.user.is_superuser or self.request.user.is_staff:
-            return Patient.objects.filter(clinic=self.request.user.clinic)
+            if hasattr(self.request.user, 'clinic'):
+                return Patient.objects.filter(clinic=self.request.user.clinic)
+            else:
+                return Patient.objects.all()
         else:
             return Patient.objects.filter(created_by=self.request.user)
 

@@ -1,0 +1,42 @@
+<div class="modal fade" id="newAppointmentModal" tabindex="-1" aria-labelledby="newAppointmentModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <form method="post" action="{% url 'patient:create_appointment' patient.id %}">
+                {% csrf_token %}
+                <div class="modal-header">
+                    <h5 class="modal-title" id="newAppointmentModalLabel">{% trans "New Appointment" %}</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"
+                        aria-label="{% trans 'Close' %}"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="id_date" class="form-label">{% trans "Date" %}</label>
+                        <input type="date" name="date" id="id_date" class="form-control" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="id_time" class="form-label">{% trans "Time" %}</label>
+                        <input type="time" name="time" id="id_time" class="form-control" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="id_doctor" class="form-label">{% trans "Doctor" %}</label>
+                        {{ appointment_form.doctor }}
+                    </div>
+                    <div class="mb-3">
+                        <label for="id_notes" class="form-label">{% trans "Notes" %}</label>
+                        {{ appointment_form.notes }}
+                    </div>
+                    <div class="mb-3">
+                        <label for="id_photos" class="form-label">{% trans "Photos" %}</label>
+                        <input type="file" name="photos" id="id_photos" class="form-control" multiple accept="image/*">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{% trans "Cancel"
+                        %}</button>
+                    <button type="submit" class="btn btn-primary">{% trans "Save Appointment" %}</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
